@@ -51,6 +51,6 @@ export function Landing({ locale }: { locale: Locale }) {
       </section>
       <section className="closing shell" id="final-cta" data-reveal><Image src="/brand/spark.svg" className="closing-spark" alt="" width={44} height={44} /><h2>{t("closingTitle")}</h2><p>{t("closingBody")}</p><a className="button button-primary" href={site.signup}><SparkIcon /><span className="button-label">{t("try")}</span></a></section>
     </main>
-    <footer className="site-footer shell"><div className="footer-brand"><Brand /><p>{t("footerLine")}</p></div><nav aria-label={t("community")}><a href={site.github}><GithubLogoIcon />GitHub<ArrowUpRightIcon size={14} /></a>{site.social.discord && <a href={site.social.discord}><DiscordLogoIcon />Discord</a>}{site.social.linkedin && <a href={site.social.linkedin}><LinkedinLogoIcon />LinkedIn</a>}{site.social.x && <a href={site.social.x}><XLogoIcon />X</a>}</nav><span className="copyright">© {new Date().getFullYear()} {t("copyright")}</span></footer>
+    <footer className="site-footer shell" data-reveal><div className="footer-brand"><Brand /><p>{t("footerLine")}</p></div><nav aria-label={t("community")}><a href={site.github}><GithubLogoIcon />GitHub<ArrowUpRightIcon size={14} /></a>{site.social.discord && <a href={site.social.discord}><DiscordLogoIcon />Discord</a>}{site.social.linkedin && <a href={site.social.linkedin}><LinkedinLogoIcon />LinkedIn</a>}{site.social.x && <a href={site.social.x}><XLogoIcon />X</a>}</nav><span className="copyright">© {new Date().getFullYear()} {t("copyright")}</span></footer>
   </>;
 }

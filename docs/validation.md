@@ -9,6 +9,15 @@ minutes, including the local-only workflow interactions and complete guided tour
 connections, with orange cursor highlights, were visually checked in the refreshed
 preview. All 398 message keys match across the three locale dictionaries.
 
+September 15 scroll follow-up: section entrances now fade/rise over 900ms, with
+44px desktop / 28px phone movement and stronger stagger. They re-arm below the
+viewport for repeat downward visits. Six relevant browser tests pass (13.7s),
+covering replay, reduced motion, proportional demo fit, workflow controls,
+keyboard/mobile controls, clipboard failure, and no-JavaScript entry paths.
+Lint and production build pass. The refreshed preview showed partial opacity
+and upward movement during staggered entrances; scrolling back up reset them.
+The full 32-test publication run above predates this scroll refinement.
+
 The current build includes stronger hero connections, scroll entrances, product
 tab transitions, and local thinking/streaming playback in chat, digests, quick
 chat, and Idea Spark. It retains the approved headline, centered Sparky CTAs,

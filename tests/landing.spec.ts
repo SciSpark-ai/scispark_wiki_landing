@@ -467,6 +467,12 @@ test('scroll entrances, tab transitions, offscreen playback and reduced-motion f
   await heading.scrollIntoViewIfNeeded();
   await expect(heading).toHaveAttribute('data-reveal-state','entered');
   expect(await heading.evaluate(el=>getComputedStyle(el).animationName)).toBe('section-arrive');
+  // Scrolling back above the section re-arms it for a fresh downward entrance.
+  await page.evaluate(() => window.scrollTo({top:0,behavior:'instant'}));
+  await expect(heading).toHaveAttribute('data-reveal-state','pending');
+  await heading.scrollIntoViewIfNeeded();
+  await expect(heading).toHaveAttribute('data-reveal-state','entered');
+  await expect(heading).toHaveCSS('opacity','1');
   await page.locator('[data-nav="chat"]').click();
   expect(await page.locator('.p-screen-content').evaluate(el=>getComputedStyle(el).animationName)).toBe('product-page-arrive');
   await page.locator('[data-tour="chat-example"]').click();

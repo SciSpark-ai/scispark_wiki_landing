@@ -35,7 +35,11 @@ spacing, and screenshot-based benefits. It preserves the actual product UI.
   September 15 color refinement: resting dots and connections are white in both
   themes, while cursor highlights keep the app's orange.
   Workflow, feature columns, setup, FAQ, and the closing action enter with a
-  short staggered fade and upward movement. Initial content remains visible.
+  staggered fade and upward movement. September 15: make entrances clearer with
+  a 900ms fade/rise (44px desktop, 28px mobile), triggered at 18% visibility.
+  Re-arm only after a section is fully below the viewport so scrolling down
+  again replays it. Include the footer. Initial content remains visible;
+  keyboard focus reveals pending content and reduced motion stays static.
 - Product tabs enter over 280ms. Sparky chat/search/review, paper digests,
   quick chat, and Idea Spark show source-reading status and progressive text.
   Sources and save actions wait for completion; the guided tour waits as well.

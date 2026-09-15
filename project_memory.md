@@ -36,6 +36,13 @@ Updated 2026-09-15 from local source, user decisions, and production-build check
 
 # Current Release/Session State
 
+- September 15 scroll refinement: clearer 900ms fade/rise entrances, staggered
+  features/setup/FAQ, and a footer entrance. Sections re-arm only when fully
+  below the viewport, supporting repeat downward visits. Preserve static
+  reduced-motion/no-JavaScript paths, keyboard access, and the faint hero network.
+  Lint/build and six relevant browser tests pass. Scroll entrances and re-arming
+  were verified in the refreshed local preview.
+
 - September 15: the user approved committing and pushing the accumulated landing
   refinements to `origin/main`. Use Git history and remote refs for publication
   status; deployment and domain replacement remain separate. All 32 browser
@@ -43,6 +50,8 @@ Updated 2026-09-15 from local source, user decisions, and production-build check
 
 - September 15: hero dots and connections rest in white in both themes. Hover
   retains the app's orange; the existing drift and cursor response remain.
+  After trying gray, higher opacity, thicker strokes, and a shadow, the user
+  explicitly chose to return to this original faint white version. Keep it faint.
 
 - Workflow blocks now show their local hints/connections without scrolling to or
   changing the demo. Diagram animation remains. Build, lint, and eight relevant

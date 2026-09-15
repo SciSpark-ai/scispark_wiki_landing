@@ -8,21 +8,27 @@ export function ScrollReveals() {
     const elements = [...document.querySelectorAll<HTMLElement>("[data-reveal]")];
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     const observer = new IntersectionObserver(entries => {
+      if (reduced.matches) return;
       entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
         const element = entry.target as HTMLElement;
-        element.dataset.revealState = "entered";
-        observer.unobserve(element);
+        if (entry.isIntersecting && entry.intersectionRatio >= .18) {
+          if (element.dataset.revealState === "pending") element.dataset.revealState = "entered";
+        } else if (!entry.isIntersecting && entry.boundingClientRect.top >= innerHeight
+          && !element.contains(document.activeElement)) {
+          // Re-arm only below the viewport: revisiting a section from above
+          // replays its entrance without hiding content already scrolled past.
+          element.dataset.revealState = "pending";
+        }
       });
-    }, { rootMargin: "0px 0px -35px 0px", threshold: 0 });
+    }, { threshold: [0, .18] });
     function configure() {
       observer.disconnect();
       elements.forEach(element => {
         // Only stage content below the fold, avoiding a flash on initial load.
-        if (!reduced.matches && element.getBoundingClientRect().top >= innerHeight - 35) {
+        if (!reduced.matches && element.getBoundingClientRect().top >= innerHeight) {
           element.dataset.revealState = "pending";
-          observer.observe(element);
         } else delete element.dataset.revealState;
+        if (!reduced.matches) observer.observe(element);
       });
     }
     function showFocused(event: FocusEvent) {
