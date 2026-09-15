@@ -28,12 +28,20 @@ cards, pill buttons, and category colors are retained. Landing tour shortcuts an
 interest presets are outside the product frame. They are demonstration controls,
 not fictional app navigation.
 
+The latest motion refinement also references
+`src/components/chat/StreamingReply.tsx` and the stage labels in `ChatWorkspace.tsx`:
+Sparky's thinking/responding indicator, short source-reading status, progressive
+text, and citation/save controls after completion. The landing simulates this
+sequence using the same existing local content across chat, digest, and Spark.
+It does not call a model or display an invented internal reasoning trace.
+
 ## Deliberate fixture adaptations
 
 - This is a standalone presentation adapter, not an embedded running product.
   It replaces vault/model calls with prepared data and in-memory interactions.
-- Six real public papers power three topics. The feed shows the two prepared
-  papers for the chosen interest. Paper summaries are authored paraphrases, not
+- Eighteen recent public papers fill the feed with six cards per interest, using
+  a 2024–2025 publication window. Six foundational sources remain in the wiki,
+  graph, and research-question examples. Paper summaries are authored paraphrases, not
   copied abstracts. Read full text opens the paper's public arXiv PDF.
 - Saving a feed card stays on Home, as in the product. Adding a paper to the
   knowledge base opens the related wiki example. Saved edits survive navigation
@@ -42,8 +50,9 @@ not fictional app navigation.
   connections in SVG. It resembles the product's network UI but does not load
   Sigma/WebGL or a real vault. These edges are illustrative knowledge links,
   not publication citation claims. Citation view states that records are absent.
-- Quick/Deep Spark and chat show labeled prepared responses; no paid calls or
-  generated scientific conclusions are implied. Idea-page actions open the
+- Quick/Deep Spark and chat use authored responses inside the labeled interactive
+  preview; no paid calls occur. Repeated fixture labels such as "Prepared example"
+  are omitted from product screens. Idea-page actions open the
   corresponding question in the wiki presentation.
 - All eight sidebar pages are demonstrated internally. Saved chat examples,
   created projects, and wiki/project note changes are retained during the visit.

@@ -4,15 +4,16 @@
 // Presentation follows product source; only storage/network behavior is replaced.
 import { useRef, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Home, TrendingUp, BookOpen, Network, FolderOpen, Sparkles, MessageSquarePlus, Clock, PanelLeftClose, Menu, X, Moon, Sun, RotateCcw, ArrowUp, Cpu, Leaf, Brain } from "lucide-react";
+import { Home, TrendingUp, BookOpen, Network, FolderOpen, Sparkles, MessageSquarePlus, Clock, PanelLeftClose, Menu, X, Moon, Sun, Cpu, Leaf, Brain } from "lucide-react";
 import { Brand, Sparky } from "./brand";
 import { useDemo } from "./providers";
-import { interests, papers, topicPapers, type Interest, type PaperId, type Stage } from "@/lib/papers";
+import { interests, paperInterest, type Interest, type PaperId, type Stage } from "@/lib/papers";
 import { ProductFeed } from "./product-preview/feed";
 import { ProductPaper } from "./product-preview/paper";
 import { ProductWiki } from "./product-preview/wiki";
 import { ProductGraph } from "./product-preview/graph";
 import { ProductSpark } from "./product-preview/spark";
+import { ProductQuickChat } from "./product-preview/quick-chat";
 
 import { ProductChat } from "./product-preview/chat";
 import { ProductProjects } from "./product-preview/projects";
@@ -33,7 +34,6 @@ export function Demo() {
   const d = useTranslations("Demo");
   const e = useTranslations("Experience");
   const t = useTranslations("Product");
-  const topic = useTranslations("Topics");
   const { state, dispatch, reset } = useDemo();
   const root = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
@@ -45,8 +45,6 @@ export function Demo() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [demoTheme, setDemoTheme] = useState<"light" | "dark" | undefined>();
   const [chat, setChat] = useState(false);
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState(false);
   const [status, setStatus] = useState("");
   const [revision, setRevision] = useState(0);
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -55,7 +53,7 @@ export function Demo() {
   const selectedTab = state.stage === "reader" ? "feed" : state.stage;
   function closeMenu() { setMobileMenu(false); menuButton.current?.focus(); }
   function navigate(stage: Stage) { setWikiIdea(undefined); dispatch({ type: "stage", stage }); setMobileMenu(false); setChat(false); screen.current?.scrollTo({ top: 0 }); }
-  function openPaper(id: PaperId) { const interest = interests.find(value => topicPapers[value].includes(id))!; if (interest !== state.interest) dispatch({type:"interest",interest}); dispatch({ type: "paper", paper: id }); screen.current?.scrollTo({ top: 0 }); }
+  function openPaper(id: PaperId) { const interest = paperInterest(id); if (interest !== state.interest) dispatch({type:"interest",interest}); dispatch({ type: "paper", paper: id }); screen.current?.scrollTo({ top: 0 }); }
   function changeTheme() { setDemoTheme(previous => (previous ?? document.documentElement.dataset.theme) === "dark" ? "light" : "dark"); }
   const tour = useGuidedTour(root, (stage, index) => {
     navigate(stage);
@@ -68,9 +66,11 @@ export function Demo() {
   }, []);
   useEffect(() => {screen.current?.scrollTo({top:0});}, [state.stage]);
   const currentLabel = selectedTab === "feed" ? t("home") : selectedTab === "chat" ? t("sparky") : t(selectedTab);
-  return <section className="demo-section product-demo" id="product-showcase" aria-label={d("preview")}>
+  return <section className="demo-section product-demo" aria-label={d("preview")}>
     <h2 className="sr-only">{d("preview")}</h2>
-    <div className="interest-bar"><span className="interest-label" id="interest-label">{d("interestLabel")}</span><div className="interest-options" role="group" aria-labelledby="interest-label">{interests.map(interest => { const Icon = interestIcons[interest]; return <button key={interest} className="interest-button" aria-pressed={interest === state.interest} onClick={() => { tour.takeControl(); dispatch({ type: "interest", interest }); setRevision(revision + 1); setStatus(""); setAnswer(false); }}><Icon />{d(interest)}</button>; })}</div></div>
+    <p className="p-preview-description">{e("caption")}</p>
+    <div className="interest-bar"><span className="interest-label" id="interest-label">{d("interestLabel")}</span><div className="interest-options" role="group" aria-labelledby="interest-label">{interests.map(interest => { const Icon = interestIcons[interest]; return <button key={interest} className="interest-button" aria-pressed={interest === state.interest} onClick={() => { tour.takeControl(); dispatch({ type: "interest", interest }); setRevision(revision + 1); setStatus(""); }}><Icon />{d(interest)}</button>; })}</div></div>
+    <div className="demo-presentation" id="product-showcase">
     <div className="demo-stage" ref={stage}><div className="mac-window" ref={root} onPointerEnter={tour.enter} onPointerLeave={tour.leave}
       onFocusCapture={event => {if(event.isTrusted) tour.takeControl();}}
       onPointerDownCapture={event => {if(event.isTrusted) tour.takeControl();}}
@@ -85,7 +85,7 @@ export function Demo() {
         <div className="p-user"><span className="p-avatar">A</span><div><strong>Alex</strong><span>{t("localProfile")}</span></div></div>
       </aside>
       <div className="p-screen" id="demo-panel" role="region" aria-label={currentLabel} tabIndex={0} ref={screen}>
-        <div key={`${state.interest}-${revision}`} className="p-screen-content">
+        <div key={`${state.interest}-${revision}-${state.stage}`} className="p-screen-content" data-page={state.stage}>
           {state.stage === "chat" && <ProductChat mode={chatMode} setMode={setChatMode} conversationId={conversationId} setConversationId={setConversationId} openPaper={openPaper} navigate={navigate} />}
           {state.stage === "trending" && <ProductTrending openPaper={openPaper}/>}
           {state.stage === "projects" && <ProductProjects openPaper={openPaper} navigate={navigate}/>}
@@ -97,12 +97,12 @@ export function Demo() {
           {state.stage === "idea" && <ProductSpark openIdea={interest => { navigate("wiki"); setWikiIdea(interest); }} />}
         </div>
       </div>
-      {chat && <div className="p-quick-chat" role="dialog" aria-label={t("quickChat")}><div className="p-title-row"><span>Sparky</span><button className="p-icon" aria-label={t("closeChat")} onClick={() => { setChat(false); chatButton.current?.focus(); }}><X /></button></div><div className="p-chat-body"><Sparky /><p>{t("chatPrompt")}</p>{answer && <div className="p-chat-answer"><p>{topic(`${state.interest}Note`)}</p><a className="p-link" href={papers[state.paper].url}>{d("source")}</a><small>{t("preparedResult")}</small></div>}</div><form onSubmit={event => { event.preventDefault(); if (question.trim()) setAnswer(true); }}><input aria-label={t("askSparky")} placeholder={t("askSparky")} value={question} onChange={event => setQuestion(event.target.value)} /><button className="p-icon" aria-label={t("send")} disabled={!question.trim()}><ArrowUp /></button></form></div>}
+      {chat && <ProductQuickChat key={state.interest} close={() => { setChat(false); chatButton.current?.focus(); }} />}
       <button className="p-companion" ref={chatButton} aria-label={t("quickChat")} aria-expanded={chat} onClick={() => setChat(!chat)}><Sparky /></button>
     </div>
     <TourCursor cursor={tour.cursor} step={tour.step}/></div></div>
-    <TourControls tour={tour}/>
-    <div className="p-preview-caption"><p>{e("caption")}</p><button onClick={() => { tour.takeControl(); reset(); setConversationId(undefined); setRevision(revision + 1); setChat(false); setQuestion(""); setAnswer(false); setStatus(d("resetDone")); }}><RotateCcw />{d("reset")}</button></div>
+    <TourControls tour={tour}><button className="tour-reset" onClick={() => { tour.takeControl(); reset(); setConversationId(undefined); setRevision(revision + 1); setChat(false); setStatus(d("resetDone")); }}>{d("reset")}</button></TourControls>
+    </div>
     <div className="sr-only" role="status">{status}</div>
   </section>;
 }

@@ -20,8 +20,9 @@ export function HeroField() {
       y: Math.abs((Math.sin(i * 311.7 + 93) * 19642.349) % 1),
       phase: i * 1.73,
     }));
-    let ink = "", accent = "";
-    function colors() { const css = getComputedStyle(host); ink = css.getPropertyValue("--text-muted").trim(); accent = css.getPropertyValue("--accent").trim(); }
+    const restingColor = "#ffffff";
+    let accent = "";
+    function colors() { accent = getComputedStyle(host).getPropertyValue("--accent").trim(); }
     function draw(time = 0) {
       frame = 0;
       if (!visible || document.hidden) { last = 0; return; }
@@ -32,21 +33,22 @@ export function HeroField() {
         const baseX = dot.x * width, baseY = dot.y * height;
         const dx = baseX - pointer.x, dy = baseY - pointer.y, distance = Math.hypot(dx, dy);
         const force = !reduced.matches && fine.matches ? Math.max(0, 1 - distance / 190) : 0;
-        const drift = reduced.matches ? 0 : Math.sin(elapsed / 3500 + dot.phase) * 6;
-        return { x: baseX + dx / (distance || 1) * force * 23 + drift, y: baseY + dy / (distance || 1) * force * 23 + drift / 2, force };
+        const driftX = reduced.matches ? 0 : Math.sin(elapsed / 2200 + dot.phase) * 16;
+        const driftY = reduced.matches ? 0 : Math.sin(elapsed / 2700 + dot.phase * 1.37) * 12;
+        return { x: baseX + dx / (distance || 1) * force * 23 + driftX, y: baseY + dy / (distance || 1) * force * 23 + driftY, force };
       });
       points.forEach((point, i) => {
         // Keep the center quieter, with the brighter constellations on the edges.
         const center = point.x > width * .23 && point.x < width * .77 && point.y > height * .12 && point.y < height * .79;
-        context!.globalAlpha = center ? .08 : .3 + point.force * .55;
-        context!.fillStyle = point.force > .1 ? accent : ink;
-        context!.beginPath(); context!.arc(point.x, point.y, point.force > .1 ? 2.1 : 1.3, 0, Math.PI * 2); context!.fill();
+        context!.globalAlpha = center ? .22 + point.force * .25 : .58 + point.force * .4;
+        context!.fillStyle = point.force > .1 ? accent : restingColor;
+        context!.beginPath(); context!.arc(point.x, point.y, point.force > .1 ? 2.8 : 1.8, 0, Math.PI * 2); context!.fill();
         points.slice(i + 1).forEach(other => {
           const distance = Math.hypot(other.x - point.x, other.y - point.y);
-          if (distance > 135 || (point.force < .05 && other.force < .05 && distance > 75)) return;
-          context!.strokeStyle = point.force > .05 ? accent : ink;
-          context!.globalAlpha = (1 - distance / 135) * (center ? .035 : .14 + point.force * .4);
-          context!.lineWidth = .7;
+          if (distance > 150 || (point.force < .05 && other.force < .05 && distance > 115)) return;
+          context!.strokeStyle = point.force > .05 ? accent : restingColor;
+          context!.globalAlpha = (1 - distance / 150) * (center ? .13 + point.force * .2 : .34 + point.force * .5);
+          context!.lineWidth = 1;
           context!.beginPath(); context!.moveTo(point.x, point.y); context!.lineTo(other.x, other.y); context!.stroke();
         });
       });

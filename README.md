@@ -34,7 +34,8 @@ Reports and screenshots are written to ignored `playwright-report/`,
 
 - English at `/`, Simplified Chinese at `/zh`, and Japanese at `/ja`.
 - System-aware light/dark themes, with a light/dark toggle and a compact language button.
-- A working preview with three prepared research topics and six public papers.
+- A working preview with three research topics, six recent feed papers per topic,
+  and six foundational papers in the wiki/graph examples.
   Its grouped sidebar, feed cards, paper actions, wiki editor, graph inspector,
   Sparky Chat/Search/Review, Trending, Projects, History, and Spark composer/gallery
   follow the actual product's UI. Open a paper, save

@@ -3,20 +3,18 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useTranslations } from "next-intl";
 import { CompassIcon, BooksIcon, HighlighterIcon, MagnifyingGlassIcon, ArchiveIcon, GraphIcon, SparkleIcon, FolderIcon, ClockCounterClockwiseIcon } from "@phosphor-icons/react";
-import { useDemo } from "./providers";
-import type { Stage } from "@/lib/papers";
 
 // Relationships follow SciSpark README, Product framework, lines 180–200.
 const nodes = [
-  {id:"q", x:430, y:55, stage:"feed", icon:CompassIcon, tone:"discovery"},
-  {id:"f", x:150, y:210, stage:"feed", icon:BooksIcon, tone:"discovery"},
-  {id:"r", x:150, y:385, stage:"reader", icon:HighlighterIcon, tone:"discovery"},
-  {id:"d", x:480, y:210, stage:"chat", icon:MagnifyingGlassIcon, tone:"discovery"},
-  {id:"w", x:480, y:385, stage:"wiki", icon:ArchiveIcon, tone:"knowledge"},
-  {id:"g", x:300, y:570, stage:"graph", icon:GraphIcon, tone:"knowledge"},
-  {id:"s", x:710, y:570, stage:"idea", icon:SparkleIcon, tone:"knowledge"},
-  {id:"p", x:855, y:155, stage:"projects", icon:FolderIcon, tone:"support"},
-  {id:"h", x:900, y:355, stage:"history", icon:ClockCounterClockwiseIcon, tone:"support"},
+  {id:"q", x:430, y:55, icon:CompassIcon, tone:"discovery"},
+  {id:"f", x:150, y:210, icon:BooksIcon, tone:"discovery"},
+  {id:"r", x:150, y:385, icon:HighlighterIcon, tone:"discovery"},
+  {id:"d", x:480, y:210, icon:MagnifyingGlassIcon, tone:"discovery"},
+  {id:"w", x:480, y:385, icon:ArchiveIcon, tone:"knowledge"},
+  {id:"g", x:300, y:570, icon:GraphIcon, tone:"knowledge"},
+  {id:"s", x:710, y:570, icon:SparkleIcon, tone:"knowledge"},
+  {id:"p", x:855, y:155, icon:FolderIcon, tone:"support"},
+  {id:"h", x:900, y:355, icon:ClockCounterClockwiseIcon, tone:"support"},
 ] as const;
 const mobilePositions: Record<string, [number,number]> = {q:[180,35],f:[85,145],r:[85,245],d:[275,145],w:[180,335],g:[85,440],s:[275,440],p:[85,550],h:[275,550]};
 const mobilePaths = [
@@ -45,7 +43,6 @@ const edges = [
 
 export function Workflow() {
   const t = useTranslations("Experience");
-  const { dispatch } = useDemo();
   const [active, setActive] = useState<string | null>(null);
   const map = useRef<HTMLDivElement>(null);
   const [running, setRunning] = useState(false);
@@ -60,14 +57,9 @@ export function Workflow() {
     document.addEventListener('visibilitychange', sync); reduced.addEventListener('change', sync);
     return () => {observer.disconnect(); document.removeEventListener('visibilitychange', sync); reduced.removeEventListener('change', sync);};
   }, []);
-  function open(id: string, stage: Stage) {
-    window.dispatchEvent(new Event("scispark-manual"));
-    if (id === "d") window.dispatchEvent(new CustomEvent("scispark-chat-mode", {detail:"review"}));
-    dispatch({type:"stage",stage});
-  }
   return <section className="workflow-section shell section-space" aria-labelledby="workflow-heading">
-    <div className="workflow-heading"><p className="workflow-kicker">{t("workflowIntro")}</p><h2 id="workflow-heading">{t("workflowTitle")}</h2><p>{t("workflowHelp")}</p></div>
-    <div className="workflow-map" ref={map} data-animated={running} onPointerLeave={() => setActive(null)}>
+    <div className="workflow-heading" data-reveal><p className="workflow-kicker">{t("workflowIntro")}</p><h2 id="workflow-heading">{t("workflowTitle")}</h2><p>{t("workflowHelp")}</p></div>
+    <div className="workflow-map" data-reveal ref={map} data-animated={running} onPointerLeave={() => setActive(null)}>
       <svg className="workflow-lines" viewBox="0 0 1100 670" fill="none" aria-hidden="true">
         <defs><marker id="workflow-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M 0 0 L 7 3.5 L 0 7" fill="var(--flow-line)" /></marker></defs>
         {edges.map(edge => <path key={edge.from+edge.to} d={edge.d} pathLength="1" className={`${"loop" in edge ? "flow-loop" : ""} ${active === edge.from || active === edge.to ? "is-connected" : ""}`} markerEnd={"support" in edge ? undefined : "url(#workflow-arrow)"} />)}
@@ -81,7 +73,7 @@ export function Workflow() {
         {running && <circle className="flow-traveler" r="2"><animateMotion dur="13s" repeatCount="indefinite" path={[0,2,3,5,7,8].map(i=>mobilePaths[i]).join(' ')}/></circle>}
       </svg>
       <ol className="workflow-nodes">{nodes.map(node => { const Icon = node.icon; return <li key={node.id} className={`workflow-node flow-${node.tone}`} style={{"--node-x":`${node.x/11}%`,"--node-y":`${node.y/6.7}%`,"--mobile-x":`${mobilePositions[node.id][0]/3.6}%`,"--mobile-y":`${mobilePositions[node.id][1]/6}%`} as CSSProperties}>
-        <a href="#product-showcase" onClick={() => open(node.id,node.stage)} onPointerEnter={() => setActive(node.id)} onFocus={() => setActive(node.id)} onBlur={() => setActive(null)} aria-describedby={`flow-hint-${node.id}`}><Icon size={23} weight="light" /><span>{t(node.id)}</span></a>
+        <button type="button" onClick={() => setActive(node.id)} onPointerEnter={() => setActive(node.id)} onFocus={() => setActive(node.id)} onBlur={() => setActive(null)} aria-expanded={active === node.id} aria-controls={`flow-hint-${node.id}`} aria-describedby={`flow-hint-${node.id}`}><Icon size={23} weight="light" /><span>{t(node.id)}</span></button>
         <span id={`flow-hint-${node.id}`} className="flow-hint">{t(`${node.id}Hint`)}</span>
       </li>; })}</ol>
     </div>

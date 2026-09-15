@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { ArrowUpRightIcon, BrowserIcon, ListIcon, XIcon, SunIcon, MoonIcon, GlobeIcon } from "@phosphor-icons/react";
-import { Brand } from "./brand";
+import { GithubLogoIcon, ListIcon, XIcon, SunIcon, MoonIcon, GlobeIcon } from "@phosphor-icons/react";
+import { Brand, SparkIcon } from "./brand";
 import { useDemo } from "./providers";
 import { localePath, site, type Locale } from "@/lib/site";
 
@@ -55,7 +55,7 @@ export function Header() {
         <div className="nav-links">
           <a href="#product-showcase" onClick={() => setOpen(false)}>{t("explore")}</a>
           <a href="#how-it-works" onClick={() => setOpen(false)}>{t("start")}</a>
-          <a href={site.github}>GitHub <ArrowUpRightIcon size={13} /></a>
+          <a href={site.github}><GithubLogoIcon size={16} aria-hidden="true" />GitHub</a>
         </div>
         <div className="nav-tools">
           <button className="nav-tool language-toggle" aria-label={`${t("language")}: ${({en: "EN", zh: "中文", ja: "日本語"})[locale]}`} title={t("language")} onClick={() => {
@@ -66,7 +66,7 @@ export function Header() {
             <SunIcon className="site-sun" aria-hidden="true" /><MoonIcon className="site-moon" aria-hidden="true" /><span className="sr-only">{t(theme === "system" ? "system" : theme === "dark" ? "dark" : "light")}</span>
           </button>
         </div>
-        <a className="button button-primary nav-cta" href={site.signup}><span className="button-label">{t("try")}</span><BrowserIcon aria-hidden="true" /></a>
+        <a className="button button-primary nav-cta" href={site.signup}><SparkIcon /><span className="button-label">{t("try")}</span></a>
       </nav>
     </div>
   </header>;

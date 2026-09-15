@@ -26,10 +26,22 @@ revision supersedes the original limits on particles, automatic tours, hero
 spacing, and screenshot-based benefits. It preserves the actual product UI.
 
 - Fixed cream/espresso glass header; language cycle and light/dark toggle buttons.
-- Optically centered CTA labels with equal icon space; soft highlight, elevation,
+- Center the complete CTA icon-and-label group with equal side padding; soft highlight, elevation,
   directional arrow motion, and press feedback on marketing buttons.
 - A sparse interactive hero constellation and a scroll-linked hero departure /
   macOS-window arrival. The frame settles before interacting with the product.
+- September 13 visibility refinement: stronger resting dots and connections,
+  with brighter orange reactions near the cursor and quieter lines behind text.
+  September 15 color refinement: resting dots and connections are white in both
+  themes, while cursor highlights keep the app's orange.
+  Workflow, feature columns, setup, FAQ, and the closing action enter with a
+  short staggered fade and upward movement. Initial content remains visible.
+- Product tabs enter over 280ms. Sparky chat/search/review, paper digests,
+  quick chat, and Idea Spark show source-reading status and progressive text.
+  Sources and save actions wait for completion; the guided tour waits as well.
+  Playback uses existing public demo content. History and saved gallery items
+  open immediately. Reduced motion shows complete replies without streaming;
+  offscreen or hidden-document playback pauses and unmounting cancels it.
 - A macOS title bar around the real product shell; all eight sidebar destinations
   remain in the prepared demo. The redundant external four-tab strip is removed.
 - A guided cursor follows Feed, Reader, Sparky, Wiki, Graph, and Idea Spark.
@@ -45,16 +57,24 @@ spacing, and screenshot-based benefits. It preserves the actual product UI.
   Reuse the interaction ideas with SciSpark artwork, fonts, colors and copy.
 - All controls and explanations are translated in English, Simplified Chinese,
   and Japanese. Native scrolling and static motion fallbacks remain usable.
+- Keep the interactive-preview label outside the product screens. Do not repeat
+  "Prepared example" or internal fixture/model-call notices in feed, replies,
+  digests, or idea results; use natural product labels in all three languages.
 
 ## September 13 viewport and copy refinement
 
 - The desktop demo starts broad and uniformly scales to fit the available viewport
   as its section approaches. Preserve its 16:10 ratio and the actual product UI;
   the layout wrapper follows its visible height. Keep mobile at readable native size.
+  The focused window can reach 1280px wide. Measure the compact playback bar when
+  fitting the presentation, so the entire window, chapters, playback, and reset
+  remain visible together. Explore links land at the window below the fixed header.
 - Add brief localized explanations beside the moving cursor, with edge-aware
   placement so callouts stay inside the window. Manual takeover remains unchanged.
-- Use browser/terminal icons for hosted signup/local installation. Orange buttons
-  use white text; the marketing orange is deepened for readable contrast.
+- Use the supplied four-point Sparky symbol for hosted signup and a terminal icon
+  for local installation, placed to the left of their labels,
+  centering the icon and text together. Orange buttons
+  use white text and the app's exact action orange, `#F97316`.
 - Fit the complete framework and heading into one desktop viewport. Animate subtle
   dots along the research paths only while visible and motion is permitted.
 - Use the product README's English slogans verbatim, with Chinese/Japanese
@@ -66,7 +86,7 @@ A brand-preserving landing page for researchers across disciplines, with a warm,
 modern visual language, SciSpark's Halant/Geist identity, and a working product
 preview as its main visual.
 
-The README headline is **From the paper you discover to the question you ask next.** Personalized paper
+The user-approved English headline is **From the study you discover to the question you investigate next.** Personalized paper
 discovery is central: visitors should immediately see how relevant papers become
 connected knowledge and new ideas. Sparky supports that journey as a subtle guide.
 The primary action opens hosted signup; local installation is a secondary path.
@@ -158,7 +178,7 @@ Avoid unrelated stock photography and decorative images added only to fill space
 
 Use these variables once at the page root, mapped to Tailwind semantic utilities.
 Components must not scatter raw color literals. The palette follows the current
-product. Marketing CTAs use a deeper orange token so their requested white labels remain readable.
+product. Marketing CTAs alias the app's action orange and retain the user-requested white labels.
 
 | Token | Light | Dark | Use |
 | --- | --- | --- | --- |
@@ -170,17 +190,17 @@ product. Marketing CTAs use a deeper orange token so their requested white label
 | `--text-secondary` | `#3E2407` | `#E6D6C0` | Body text |
 | `--text-muted` | `#716559` | `#A09080` | Secondary metadata |
 | `--accent` | `#F97316` | `#F97316` | Product actions and decorative accents |
-| `--cta-accent` | `#C4510C` | `#C4510C` | Marketing action fill |
+| `--cta-accent` | `var(--accent)` | `var(--accent)` | Marketing action fill, same as product |
 | `--on-accent` | `#FFFFFF` | `#FFFFFF` | Marketing action text |
 | `--accent-ink` | `#A64717` | `#FB923C` | Text links and focus ring |
 | `--accent-ink-hover` | `#87380E` | `#FDBA74` | Hovered text link |
 | `--border` | `#E8D3C0` | `#3C2C1B` | Decorative surface boundaries |
 
 Computed WCAG contrast for these exact opaque color pairs: CTA text on orange
-**4.64:1** in either mode; secondary body on page **13.84:1 light / 13.26:1 dark**;
+**2.80:1** in either mode; secondary body on page **13.84:1 light / 13.26:1 dark**;
 muted text on card **4.62:1 / 5.24:1**; accent link on card **4.85:1 / 7.16:1**.
-The source product retains its required white-on-bright-orange treatment
-(**2.80:1**); marketing CTAs use the deeper orange above. Check hover, disabled, focus, transparency, and rendered combinations
+The source product and marketing CTAs share the explicitly requested white-on-orange
+treatment. This pair does not meet WCAG AA text contrast. Check hover, disabled, focus, transparency, and rendered combinations
 separately during implementation. Avoid opacity reductions on muted text.
 
 The decorative border is not sufficient to identify a control. Use a stronger
@@ -261,7 +281,7 @@ feature row, setup choices, and FAQ.
 
 ## Copy and destinations
 
-README English headline: **From the paper you discover to the question you ask next.**
+User-approved English headline: **From the study you discover to the question you investigate next.**
 
 README hero description:
 
@@ -324,8 +344,10 @@ vault read, or backend write is required. Never fake a successful real signup.
 
 Three interest presets update both the feed and its downstream knowledge path.
 Working topic names are **AI & computing**, **Climate & energy**, and **Mind &
-behavior**; these are design defaults, not user research results. Show one featured
-paper and up to two supporting papers per interest. Every displayed real paper
+behavior**; these are design defaults, not user research results. Show six distinct
+recent papers per interest, filling the window and continuing through internal
+scrolling. The feed currently uses a verified 2024–2025 publication window; the
+foundational wiki/graph examples retain their original sources. Every displayed real paper
 must have verified title, authors, and source URL; synthetic papers must visibly
 say they are examples and must not carry fabricated DOI links or quotations.
 
@@ -372,7 +394,7 @@ names, feedback, captions, setup explanations, metadata, and FAQ. Keep product
 names and shell commands intact. Use native labels: **English / 简体中文 / 日本語**.
 
 Working signup labels are **Try SciSpark / 试用 SciSpark / SciSpark を試す**.
-Headlines are **From the paper you discover to the question you ask next. / 从你发现的论文，到你提出的下一个问题。 /
+Headlines are **From the study you discover to the question you investigate next. / 从你发现的论文，到你提出的下一个问题。 /
 出会った論文から、次に問いかける疑問へ。** Native copy refinement and rendered review remain build
 tasks. Apply the English word budget by meaning and visual length in CJK, not a
 space-based word counter. Avoid letter spacing intended for Latin capitals.
@@ -469,3 +491,9 @@ brand assets were copied from the user-supplied `assets/brand/` kit without chan
 the source repository. The earlier English study remains a historical reference.
 Hosting migration and physical mobile-browser acceptance remain release work;
 see [validation results](docs/validation.md) for the exact local coverage.
+
+### Workflow interaction revision — September 13
+
+Workflow blocks reveal their local hint and connected paths. They do not navigate
+to the demo, change its active page, or interrupt its tour. Keep the existing
+diagram animation and keyboard-accessible explanations.

@@ -183,10 +183,6 @@
 .p-chat-answer small { display: block; color: var(--text-muted); }
 .p-quick-chat form { display: flex; padding: 10px; border-top: 1px solid var(--border); }
 .p-quick-chat input { width: 100%; min-width: 0; border: 0; background: transparent; color: var(--text-primary); font-size: 13px; padding-inline: 6px; }
-.p-preview-caption { display: flex; justify-content: space-between; gap: 16px; padding: 12px 4px; color: var(--text-muted); font-size: 11px; }
-.p-preview-caption button { display: flex; align-items: center; gap: 6px; min-height: 36px; flex-shrink: 0; }
-.p-preview-caption button svg { width: 13px; height: 13px; }
-.p-preview-caption p { max-width: 750px; }
 .p-mobile-nav, .p-drawer-close, .p-menu-backdrop { display: none; }
 .p-dark-icon { display: none; }
 [data-theme="dark"] .product-window .p-dark-icon, .product-window[data-theme="dark"] .p-dark-icon { display: block; }
@@ -244,7 +240,5 @@
   .p-node-label { font-size: 10px; max-width: 70px; }
   .p-graph-stats { font-size: 11px; }
   .p-author-grid { grid-template-columns: 1fr; }
-  .p-preview-caption { flex-direction: column; gap: 3px; padding-inline: 6px; }
-  .p-preview-caption button { align-self: flex-end; }
   .p-companion { width: 44px; height: 44px; right: 14px; bottom: 14px; }
 }

@@ -1,6 +1,6 @@
 # Verified Facts
 
-Updated 2026-09-13 from local source, user decisions, and production-build checks.
+Updated 2026-09-15 from local source, user decisions, and production-build checks.
 
 - This is the implemented SciSpark marketing landing, separate from the product
   runtime. Product source is `/Users/tongshan/Documents/SciSpark_paper_manager`;
@@ -15,8 +15,8 @@ Updated 2026-09-13 from local source, user decisions, and production-build check
 - Routes are statically generated: English `/`, Simplified Chinese `/zh`,
   Japanese `/ja`. Themes initialize from the system with a light/dark toggle;
   a language button cycles English, Chinese, and Japanese.
-- The preview is prepared local state, with six public papers and three research
-  topics. It makes no model calls and does not persist real research data.
+- The preview is prepared local state, with 24 public papers and three research
+  topics (18 recent feed papers and six foundational wiki/graph sources). It makes no model calls and does not persist real research data.
   Theme preference uses local storage; explicit locale navigation transfers demo
   progress once through session storage. Normal reload starts a fresh preview.
 - The actual SciSpark wordmark, Sparky, symbol, and favicon exports are copied
@@ -36,11 +36,52 @@ Updated 2026-09-13 from local source, user decisions, and production-build check
 
 # Current Release/Session State
 
+- September 15: the user approved committing and pushing the accumulated landing
+  refinements to `origin/main`. Use Git history and remote refs for publication
+  status; deployment and domain replacement remain separate. All 32 browser
+  scenarios pass together (1.6 minutes); lint and the production build pass.
+
+- September 15: hero dots and connections rest in white in both themes. Hover
+  retains the app's orange; the existing drift and cursor response remain.
+
+- Workflow blocks now show their local hints/connections without scrolling to or
+  changing the demo. Diagram animation remains. Build, lint, and eight relevant
+  browser checks pass; the refreshed preview was visually verified.
+
+- Feed refinement: six recent 2024–2025 papers per interest fill the demo and
+  continue below the fold. All cards open the reader and support saving; reader
+  digests follow the selected paper. Recent records also survive locale transfer.
+  Build, lint, and types pass; all 32 browser tests pass in one run. Regenerated
+  both CJK font subsets and visually checked the refreshed desktop feed.
+
+- User reversed the sparse-constellation cleanup. Restore the preceding denser
+  connected-dot pattern with its stronger visibility and cursor highlights.
+  Follow-up: make autonomous drift more visible with independently phased motion
+  of 16px horizontally and 12px vertically, retaining the pattern and cursor response.
+- Current motion refinement: increase hero connection visibility; add section
+  entrances and product tab transitions; use local thinking/streaming playback
+  for Sparky, digests, quick chat, and Idea Spark. The tour waits for responses.
+  Preserve manual takeover, immediate History/gallery reopening, reduced motion,
+  and offscreen/hidden pause. Build, lint, and types pass; 31 browser scenarios
+  are verified across the main run and corrective follow-up. Hero was inspected
+  in both themes; the automatic tour completes with streamed responses.
+  Exact verification is recorded in `docs/validation.md`.
+- User requested removing "Prepared example" labels inside the demo. Feed and
+  activity labels now use normal product wording; reply/digest/idea results omit
+  fixture notices. The interactive-preview description remains outside the app.
+  Build, lint, and all 27 browser tests pass with the regenerated CJK font subsets.
+- Latest refinement: put marketing CTA icons on the left and center each icon-and-label
+  group together, using equal side padding without an empty spacer. Enlarge the settled desktop preview (up to 1280px), and fit its complete
+  window plus a compact playback/reset bar together below the fixed header.
+  The interactive-preview description now precedes the topic selector. Explore and
+  feature links land at the window. All 27 browser tests, lint, types, and the
+  production build pass; desktop fit is verified across three sizes and locales.
+  These follow-up changes are included in the September 15 source-publication scope.
 - User requested committing and pushing the completed landing to the configured
   GitHub repository. Source publication is separate from deployment and domain
   replacement; use Git history and remote refs for the publication status.
 - Current refinement: proportionally shrink the desktop demo on scroll, add cursor
-  explanations, browser/terminal CTA icons and white labels, fit and animate the
+  explanations, Sparky/terminal CTA icons and white labels, fit and animate the
   README workflow, align three features horizontally, and use README headlines.
   Implemented and verified. All 27 browser tests pass. Demo and full workflow fit
   at 1440×900, 1512×754, and 1920×1080, with proportional scaling and working
@@ -83,8 +124,7 @@ Updated 2026-09-13 from local source, user decisions, and production-build check
 - Primary action: **Try SciSpark**, direct to
   `https://beta.scispark.ai/signup`. User selected immediate access at launch,
   not invitation or waitlist framing. Local install and GitHub are secondary.
-- Main headline now follows the README: **From the paper you discover to the
-  question you ask next.** The AI companion and unified workspace support it. Personalized paper discovery is a major
+- English headline was revised by the user to **From the study you discover to the question you investigate next.** The AI companion and unified workspace support it. Personalized paper discovery is a major
   feature and leads both the message and interactive demonstration.
 - The user's hosted direction includes an online vault and a future native
   mobile app. The mobile app remains explicitly planned in public copy.
@@ -109,8 +149,9 @@ Updated 2026-09-13 from local source, user decisions, and production-build check
 - Preserve warm cream, espresso, orange, Halant, Geist, rounded forms, actual
   wordmark, and subtle Sparky. Approved design dials are 4/6/4. Both themes and
   English, Simplified Chinese, and Japanese are included in the first build.
-- Marketing CTAs use white text on the deeper orange `--cta-accent: #c4510c`
-  (4.64:1 contrast). Product actions retain their source orange and white labels.
+- Marketing CTAs and product actions share the app's `#F97316` orange and white
+  labels, as explicitly requested. `--cta-accent` aliases `--accent` to prevent
+  drift; the shared pair has the documented 2.80:1 text contrast exception.
 - README slogan provenance is in `docs/readme-copy.md`; metadata and social cards
   follow the updated hero. CJK subsets include the headlines and cursor callouts.
 - Discord, LinkedIn, and X URLs remain the only missing content inputs. Their
@@ -122,6 +163,10 @@ Updated 2026-09-13 from local source, user decisions, and production-build check
 
 # Known Pitfalls
 
+- Do not remove entrance-animation state on mouse focus: it can move a control
+  between pointerdown and pointerup and swallow the click. Only reveal pending
+  content early for keyboard focus. Quick-chat submission keeps focus in its
+  input so Escape still closes the panel when Send is disabled during playback.
 - Do not carry over the earlier clinical audience, patient outcomes, unsupported
   metrics, invented testimonials, old tabs, or waitlist copy.
 - Do not substitute a generic marketing dashboard for the real product UI.

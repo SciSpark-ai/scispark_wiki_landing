@@ -1,7 +1,32 @@
 # Local implementation validation
 
-Verified 2026-09-13 against `npm run build` followed by `npm run start`, using
+Verified 2026-09-15 against `npm run build` followed by `npm run start`, using
 installed Google Chrome. This records local results, not a public deployment.
+
+September 15 publication check: all 32 browser scenarios pass together in 1.6
+minutes, including the local-only workflow interactions and complete guided tour
+(52.7 seconds). Lint and the production build pass. White resting hero dots and
+connections, with orange cursor highlights, were visually checked in the refreshed
+preview. All 398 message keys match across the three locale dictionaries.
+
+The current build includes stronger hero connections, scroll entrances, product
+tab transitions, and local thinking/streaming playback in chat, digests, quick
+chat, and Idea Spark. It retains the approved headline, centered Sparky CTAs,
+the app's exact orange, and product wording in all three languages. Each feed now
+contains six distinct papers from 2024–2025, with localized titles/summaries and
+regenerated CJK subsets. The six foundational wiki/graph sources remain intact.
+
+Lint, TypeScript, and the production build pass. All 32 browser tests pass in one
+run (1.6 minutes), including every new paper's reader/source/digest, feed coverage
+of the complete window, refresh, and a saved recent paper transferred to Chinese.
+The full automatic tour passed in 53.1 seconds. The refreshed desktop feed was
+visually inspected. Performance has not been remeasured for this revision.
+
+Workflow interaction follow-up: all nine blocks keep the page's scroll position,
+URL, and demo page unchanged while showing local explanations. The eight relevant
+browser checks pass (28.2 seconds), including responsive/accessibility and diagram
+animation checks; lint and the production build pass. The local preview was refreshed
+and a workflow click was visually verified.
 
 ## Completed checks
 
@@ -10,7 +35,8 @@ installed Google Chrome. This records local results, not a public deployment.
 | ESLint | Pass |
 | TypeScript | Pass |
 | Next.js production build | Pass; `/`, `/zh`, `/ja`, robots, sitemap |
-| Playwright suite | All 27 tests passed in 1.1 minutes, including the September 13 viewport/copy refinement |
+| Playwright suite | All 32 scenarios pass in one run |
+| Recent feed | Six cards per interest fill and extend beyond the window; publication window is 2024–2025; all 18 readers, source URLs and digests match their cards; refresh reorders cards; a saved recent paper survives locale transfer |
 | Discovery journeys | All three topics through Feed, Reader, Wiki, Graph, and Idea Spark in all three languages |
 | Responsive layout | No page overflow at 320, 390, 768, 1024, and 1440 CSS pixels, each locale and theme: 30 combinations |
 | Automated accessibility | No unexpected violations in 34 axe WCAG 2A/2AA/2.1A/2.1AA audits, including explicit label-content matching: 18 Feed/Graph audits across locales/themes plus all eight pages at phone width in English, both themes; product contrast exception documented below |
@@ -18,10 +44,11 @@ installed Google Chrome. This records local results, not a public deployment.
 | Added product pages | Sparky Chat/Search/Review with citations and report save, Trending filters and paper opening, Projects creation and notes, History conversation reopening and guarded note undo in all three languages |
 | Phone product pages | All eight sidebar pages fit at 390px in every locale/theme: 48 page/locale/theme combinations |
 | Guided cursor | Completes Feed → Reader → Sparky → Wiki → Graph → Idea Spark; manual input cancels until explicit resume, offscreen pause preserves state, mobile/reduced-motion playback remains explicit |
-| Marketing revision | Fixed header remains at top while scrolling; production backdrop blur is present; CTA text is centered within 1px; nine framework nodes navigate within the demo |
-| Viewport refinement | Desktop demo shrinks proportionally while keeping its 16:10 ratio; full frame and workflow fit at 1440×900, 1512×754, and 1920×1080; scaled Projects navigation remains usable |
-| Copy and callouts | README headline and three feature headings; matching icon/headline/body/action rows; white CTA labels; localized cursor explanation stays within the demo |
+| Marketing revision | Fixed header remains at top while scrolling; production backdrop blur is present; all five CTA icons sit left of labels, with the complete icon-and-label group centered within 1px; nine framework nodes show explanations in place without navigating or changing the demo |
+| Viewport refinement | Larger desktop demo keeps its 16:10 ratio; Explore lands with the complete window and adjacent playback/reset bar visible at 1440×900, 1512×754, and 1920×1080 in all three locales; workflow also fits; scaled Projects navigation remains usable |
+| Copy and callouts | User-approved hero and README feature headings; matching icon/headline/body/action rows; white CTA labels; localized cursor explanation stays within the demo |
 | Workflow motion | Visible motion-enabled diagrams animate two desktop paths; reduced motion removes the traveling dots |
+| New motion behavior | Sections enter on scroll; tabs animate on navigation; EN/ZH/JA responses progress through thinking, partial text, and completion; sources/save actions wait; navigation cancels playback; History opens immediately; offscreen playback pauses; reduced motion skips streaming |
 | Installation copy | Actual clipboard success plus denied-clipboard feedback and selectable fallback |
 | No JavaScript | Visible signup on a 1366×660 viewport; install anchor/commands and native FAQ work in all locales |
 | Metadata and links | Canonical host, locale alternates, localized OG images, consistent signup CTA, robots/sitemap, unknown route 404; no empty `#` links |
@@ -36,15 +63,17 @@ document, and for reduced motion; scroll transitions fall back to static layouts
 Automated audits check rendered text contrast in the covered states.
 
 The source product's `design.md` explicitly requires white text/icons on its
-orange primary actions and avatar, with a known approximately 2.8:1 contrast
-ratio. The embedded preview preserves that product requirement. Tests allow
-only `color-contrast` findings on `.p-primary` and `.p-avatar`; other findings
-remain failures. This is not a claim of full WCAG AA compliance. See
+orange primary actions and avatar. The user also requested that marketing CTAs
+match the app's `#F97316` fill while keeping white labels. This shared pair has
+approximately 2.8:1 contrast. Tests allow only this exact white/orange
+`color-contrast` finding on product primary actions/avatars and marketing
+primary buttons/labels; other findings remain failures. This is not a claim of
+full WCAG AA compliance. See
 [product UI fidelity](product-ui-fidelity.md) for source provenance and the
 prepared-data boundary.
 
-Marketing signup buttons use white labels on `#c4510c` (4.64:1). The automated
-contrast exception remains limited to the original product controls, not CTAs.
+Marketing signup buttons alias the product accent token. The CTA check compares
+all four fills with the rendered product action and its verified `#F97316` value.
 
 ## Earlier local mobile performance — before viewport/copy refinement
 

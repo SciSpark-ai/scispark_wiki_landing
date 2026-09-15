@@ -6,9 +6,9 @@ import { useState } from "react";
 import { Bookmark, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useDemo } from "../providers";
-import { papers, topicPapers, type PaperId } from "@/lib/papers";
+import { papers, feedPapers, type PaperId } from "@/lib/papers";
 
-const categories: Record<PaperId, string> = { attention: "methods", rag: "methods", graphcast: "findings", pangu: "methods", learning: "review", mind: "findings" };
+const categories: Record<PaperId, string> = { attention: "methods", rag: "methods", graphcast: "findings", pangu: "methods", learning: "review", mind: "findings", qwen3: "methods", deepseekr1: "methods", s1: "methods", deepseekv3: "methods", olmo2: "methods", llama3: "methods", regionalweather: "methods", seasonalweather: "findings", efficientweather: "methods", aurora: "methods", ace2: "methods", continuousweather: "methods", behaviorprediction: "findings", cognitionai: "review", multihuman: "methods", socialsimulation: "findings", centaur: "methods", generativepeople: "methods" };
 
 export function SavePaper({ id }: { id: PaperId }) {
   const t = useTranslations("Product");
@@ -26,12 +26,12 @@ export function ProductFeed({ openPaper }: { openPaper: (id: PaperId) => void })
   const [reversed, setReversed] = useState(false);
   const [votes, setVotes] = useState<Partial<Record<PaperId, "up" | "down">>>({});
   const [notice, setNotice] = useState("");
-  const ids = reversed ? [...topicPapers[interest]].reverse() : topicPapers[interest];
+  const ids = reversed ? [...feedPapers[interest]].reverse() : feedPapers[interest];
   return <div className="p-page p-feed">
     <h3 className="p-page-title">{t("greeting")}</h3>
     <div className="p-feed-toolbar"><span>{t("updated")}</span><button className="p-button p-primary" onClick={() => { setReversed(!reversed); setNotice(t("refreshed")); }}>{t("refresh")}</button></div>
     <p className="p-window">{t("publicationWindow", { start: Math.min(...ids.map(id => Number(papers[id].year))), end: Math.max(...ids.map(id => Number(papers[id].year))) })}</p>
-    <h4 className="p-shelf-title">{t("olderPapers")}</h4>
+    <h4 className="p-shelf-title">{t("recentPapers")}</h4>
     <div className="p-feed-grid">
       {ids.map((id, index) => <article key={id} className={`p-feed-card ${index === 0 ? "featured-paper" : "supporting-paper"}`}>
         <div className={`p-category p-category-${categories[id]}`}><span>{t(categories[id])}</span><span className="p-publication">arXiv</span></div>

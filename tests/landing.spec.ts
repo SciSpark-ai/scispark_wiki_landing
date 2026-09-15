@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { demoReducer, initialDemo, parseDemoState } from "../src/lib/papers";
+import { demoReducer, feedPapers, initialDemo, papers, parseDemoState } from "../src/lib/papers";
 import { installCommand } from "../src/lib/site";
 import en from "../src/messages/en.json";
 import zh from "../src/messages/zh.json";
@@ -9,13 +9,18 @@ import ja from "../src/messages/ja.json";
 const copies = { en, zh, ja };
 const paths = { en: "/", zh: "/zh", ja: "/ja" };
 
-// Product design.md explicitly requires white on its existing orange controls.
-// Preserve that known product contrast exception, without suppressing other
-// contrast findings or other accessibility rules.
+// The product and user-approved marketing CTAs share white on #F97316.
+// Allow only that exact known contrast pair on those controls; other contrast
+// findings and all other accessibility rules remain failures.
 function unexpectedViolations(violations: Awaited<ReturnType<AxeBuilder["analyze"]>>["violations"]) {
   return violations.flatMap(violation => {
     if (violation.id !== "color-contrast") return [violation];
-    const nodes = violation.nodes.filter(node => !/class="[^"]*\bp-(primary|avatar)\b[^"]*"/.test(node.html));
+    const nodes = violation.nodes.filter(node => {
+      const brandControl = /class="[^"]*\b(?:p-(?:primary|avatar)|button-primary|button-label)\b[^"]*"/.test(node.html);
+      const brandPair = node.any.some(check => check.id === "color-contrast"
+        && check.data?.fgColor === "#ffffff" && check.data?.bgColor === "#f97316");
+      return !(brandControl && brandPair);
+    });
     return nodes.length ? [{ ...violation, nodes }] : [];
   });
 }
@@ -25,11 +30,11 @@ test("saving is idempotent, preserves other interests, and rejects invalid trans
   expect(feedSave.stage).toBe("feed");
   expect(feedSave.saved).toEqual(["rag"]);
   const saved = demoReducer(initialDemo, { type: "save" });
-  expect(demoReducer(saved, { type: "save" }).saved).toEqual(["attention"]);
+  expect(demoReducer(saved, { type: "save" }).saved).toEqual(["qwen3"]);
   const other = demoReducer(saved, { type: "interest", interest: "climate" });
   expect(other.stage).toBe("feed");
-  expect(other.paper).toBe("graphcast");
-  expect(other.saved).toEqual(["attention"]);
+  expect(other.paper).toBe("regionalweather");
+  expect(other.saved).toEqual(["qwen3"]);
   expect(parseDemoState(JSON.stringify({ ...other, paper: "attention" }))).toBeUndefined();
   expect(parseDemoState("not JSON")).toBeUndefined();
   expect(demoReducer(other, { type: "reset" })).toEqual(initialDemo);
@@ -163,7 +168,7 @@ test("mobile menu, preview keyboard tabs, paper disclosure, and copy feedback", 
   await expect(page.locator(".p-wiki-layout")).toBeVisible();
   await productMenu.click();
   await page.locator('[data-nav="feed"]').click();
-  await expect(page.locator(".supporting-paper")).toBeAttached();
+  await expect(page.locator(".supporting-paper")).toHaveCount(5);
   await page.locator(".featured-paper summary").click();
   await expect(page.locator(".featured-paper details")).toHaveAttribute("open", "");
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
@@ -232,7 +237,8 @@ for (const locale of ['en','zh','ja'] as const) {
       await page.locator('.p-chat-modes').getByRole('button',{name:copy.Experience[mode],exact:true}).click();
       await page.locator('[data-tour="chat-example"]').click();
       await page.locator('[data-tour="chat-send"]').click();
-      await expect(page.locator('.p-assistant-message')).toContainText(copy.Experience.prepared);
+      await expect(page.locator('.p-assistant-message')).toContainText(mode==='review'?copy.Experience.reportBody:copy.Topics.aiNote);
+      await expect(page.locator('.p-assistant-message > .p-chip')).toHaveCount(0);
       await expect(page.locator('.p-chat-sources button')).toHaveCount(2);
     }
     await page.getByRole('button',{name:copy.Experience.saveReport,exact:true}).click();
@@ -264,21 +270,42 @@ for (const locale of ['en','zh','ja'] as const) {
   });
 }
 
-test('fixed glass header, centered labels, all framework links and responsive window', async ({page})=>{
+test('fixed glass header, centered CTA content, local framework interactions and responsive window', async ({page})=>{
   await page.emulateMedia({reducedMotion:'reduce'});
-  await page.setViewportSize({width:1440,height:1000});await page.goto('/');
-  for(const selector of ['.nav-cta','.hero-actions .button-primary']) {
-    const button=await page.locator(selector).boundingBox();const label=await page.locator(`${selector} .button-label`).boundingBox();
-    expect(Math.abs(button!.x+button!.width/2-label!.x-label!.width/2)).toBeLessThan(1);
-    expect(Math.abs(button!.y+button!.height/2-label!.y-label!.height/2)).toBeLessThan(1);
+  for(const locale of ['en','zh','ja'] as const) for(const width of [1440,390]) {
+    await page.setViewportSize({width,height:1000});await page.goto(paths[locale]);
+    await page.evaluate(()=>document.fonts.ready);
+    for(const selector of ['.nav-cta','.hero-actions .button-primary','.hero-actions .button-secondary','.hosted-setup .button','.closing .button']) {
+      if(!await page.locator(selector).isVisible()) continue;
+      const button=(await page.locator(selector).boundingBox())!;
+      const label=(await page.locator(`${selector} .button-label`).boundingBox())!;
+      const icon=(await page.locator(`${selector} > :is(svg,.spark-icon)`).boundingBox())!;
+      expect(icon.x+icon.width).toBeLessThan(label.x);
+      // Center the complete icon-and-label group, with equal visible padding.
+      const leftPadding=icon.x-button.x;
+      const rightPadding=button.x+button.width-label.x-label.width;
+      expect(Math.abs(leftPadding-rightPadding)).toBeLessThan(1);
+      expect(Math.abs(button.y+button.height/2-label.y-label.height/2)).toBeLessThan(1);
+      expect(Math.abs(button.y+button.height/2-icon.y-icon.height/2)).toBeLessThan(1);
+    }
   }
+  await page.setViewportSize({width:1440,height:1000});await page.goto('/');
   await page.locator('.workflow-section').scrollIntoViewIfNeeded();
   expect((await page.locator('.site-header').boundingBox())!.y).toBe(0);
   expect(await page.locator('.site-header').evaluate(el=>getComputedStyle(el).backdropFilter)).toContain('blur');
   await expect(page.locator('.workflow-node')).toHaveCount(9);
   await expect(page.locator('.product-capture')).toHaveCount(0);
-  await page.locator('.workflow-node').filter({hasText:en.Experience.d}).getByRole('link').click();
-  await expect(page.locator('.p-chat-modes').getByRole('button',{name:en.Experience.review,exact:true})).toHaveAttribute('aria-pressed','true');
+  const workflowUrl = page.url();
+  const workflowScroll = await page.evaluate(() => window.scrollY);
+  const demoPage = await page.locator('.p-screen-content').getAttribute('data-page');
+  await expect(page.locator('.workflow-node a')).toHaveCount(0);
+  for (const node of await page.locator('.workflow-node button').all()) {
+    await node.click();
+    await expect(node).toHaveAttribute('aria-expanded', 'true');
+    expect(page.url()).toBe(workflowUrl);
+    expect(Math.abs(await page.evaluate(() => window.scrollY) - workflowScroll)).toBeLessThan(2);
+    await expect(page.locator('.p-screen-content')).toHaveAttribute('data-page', demoPage!);
+  }
   await expect(page.locator('.p-navigation a')).toHaveCount(0);
   await expect(page.locator('.mac-titlebar')).toBeVisible();
 });
@@ -341,36 +368,50 @@ test('mobile and reduced motion keep autoplay off and support explicit tour chap
   await expect(page.locator('.tour-controls')).toHaveAttribute('data-tour-mode','paused');
 });
 
-test('scroll fits the whole demo proportionally and the workflow in one desktop viewport', async ({page})=>{
+test('scroll fits the larger demo and its controls together, preserving proportions', async ({page})=>{
   await page.emulateMedia({reducedMotion:'no-preference'});
-  for(const [width,height] of [[1440,900],[1512,754],[1920,1080]]) {
-    await page.setViewportSize({width,height}); await page.goto('/');
+  for(const [width,height] of [[1440,900],[1512,754],[1920,1080]]) for(const locale of ['en','zh','ja'] as const) {
+    await page.setViewportSize({width,height}); await page.goto(paths[locale]);
     await page.evaluate(()=>document.fonts.ready);
     const before=(await page.locator('.mac-window').boundingBox())!;
-    await page.locator('.demo-stage').evaluate(el=>window.scrollTo({top:window.scrollY+el.getBoundingClientRect().top-155,behavior:'instant'}));
+    // The Explore link should land with both the product and playback controls
+    // visible, without requiring a second scroll to find the actions.
+    await page.locator('.nav-links a[href="#product-showcase"]').click();
+    await expect.poll(async()=>(await page.locator('.demo-stage').boundingBox())!.y).toBeLessThan(98);
     await expect.poll(async()=>(await page.locator('.mac-window').boundingBox())!.width).toBeLessThan(before.width-20);
     const after=(await page.locator('.mac-window').boundingBox())!;
     expect(after.width/after.height).toBeCloseTo(before.width/before.height,2);
     expect(after.y).toBeGreaterThan(72);expect(after.y+after.height).toBeLessThan(height-30);
-    expect(after.width).toBeLessThanOrEqual(1121);
-    await page.getByRole('button',{name:en.Experience.pause,exact:true}).click();
+    expect(after.width).toBeLessThanOrEqual(1281);
+    if (locale==='en') expect(after.width).toBeGreaterThan(width===1512?880:width===1440?1100:1200);
+    const controls=(await page.locator('.tour-controls').boundingBox())!;
+    expect(controls.y-(after.y+after.height)).toBeLessThanOrEqual(9);
+    expect(controls.y+controls.height).toBeLessThan(height-12);
+    await page.getByRole('button',{name:copies[locale].Experience.pause,exact:true}).click();
     await page.locator('[data-nav="projects"]').click();
     await expect(page.locator('.p-project-grid')).toBeVisible();
-    await page.screenshot({path:`qa/refined-demo-${width}.png`});
+    await page.screenshot({path:`qa/refined-demo-${locale}-${width}.png`});
     await page.locator('.workflow-section').evaluate(el=>window.scrollTo({top:window.scrollY+el.getBoundingClientRect().top-80,behavior:'instant'}));
     const workflow=(await page.locator('.workflow-section').boundingBox())!;
     expect(workflow.height,`${width}x${height} workflow fit`).toBeLessThan(height-73);
     await expect(page.locator('.workflow-map')).toHaveAttribute('data-animated','true');
     await expect(page.locator('.workflow-lines animateMotion')).toHaveCount(2);
-    await page.screenshot({path:`qa/refined-workflow-${width}.png`});
+    await page.screenshot({path:`qa/refined-workflow-${locale}-${width}.png`});
   }
 });
 
-test('README headlines, white CTA labels, consistent feature rows and cursor explanations',async({page})=>{
+test('approved headlines, white CTA labels, consistent feature rows and cursor explanations',async({page})=>{
   await page.setViewportSize({width:1440,height:1000});await page.goto('/');
-  await expect(page.locator('h1')).toHaveText('From the paper you discover to the question you ask next.');
+  await expect(page.locator('h1')).toHaveText('From the study you discover to the question you investigate next.');
   expect(await page.locator('.hero-actions .button-primary').evaluate(el=>getComputedStyle(el).color)).toBe('rgb(255, 255, 255)');
-  await expect(page.locator('.hero-actions .button svg')).toHaveCount(2);
+  const productOrange = await page.locator('.p-button.p-primary').first().evaluate(el=>getComputedStyle(el).backgroundColor);
+  expect(productOrange).toBe('rgb(249, 115, 22)');
+  for (const cta of await page.locator('.button-primary').all()) {
+    expect(await cta.evaluate(el=>getComputedStyle(el).backgroundColor)).toBe(productOrange);
+  }
+  await expect(page.locator('.hero-actions .button > :is(svg,.spark-icon)')).toHaveCount(2);
+  await expect(page.locator('.button-primary .spark-icon')).toHaveCount(4);
+  expect(await page.locator('.hero-actions .spark-icon').evaluate(el=>getComputedStyle(el).maskImage)).toContain('/brand/spark.svg');
   await expect(page.locator('.benefits-grid > article > .benefit-icon')).toHaveCount(3);
   const boxes=await page.locator('.benefits-grid > article').evaluateAll(els=>els.map(el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,h:r.height};}));
   expect(boxes.every(box=>Math.abs(box.y-boxes[0].y)<1&&Math.abs(box.h-boxes[0].h)<1)).toBeTruthy();
@@ -383,4 +424,103 @@ test('README headlines, white CTA labels, consistent feature rows and cursor exp
   await page.locator('.workflow-section').scrollIntoViewIfNeeded();
   await expect(page.locator('.workflow-map')).toHaveAttribute('data-animated','false');
   await expect(page.locator('.flow-traveler')).toHaveCount(0);
+});
+
+for (const locale of ['en', 'zh', 'ja'] as const) {
+  test(`${locale}: AI playback thinks, streams, finishes, and cancels on navigation`, async ({page}) => {
+    const copy = copies[locale];
+    await page.emulateMedia({reducedMotion:'no-preference'});
+    await page.setViewportSize({width:1440,height:1000}); await page.goto(paths[locale]);
+    await page.locator('[data-nav="chat"]').click();
+    await page.locator('[data-tour="chat-example"]').click();
+    await page.locator('[data-tour="chat-send"]').click();
+    const reply = page.locator('.p-assistant-message .p-response');
+    await expect(reply).toHaveAttribute('data-response-state','thinking');
+    await expect(reply).toContainText(copy.Experience.understanding);
+    await expect(page.locator('.p-chat-sources')).toHaveCount(0);
+    await expect(reply).toHaveAttribute('data-response-state','streaming');
+    const partial = await reply.locator('.p-response-content > p').innerText();
+    expect(partial.length).toBeLessThan(copy.Topics.aiNote.length);
+    await expect(reply).toHaveAttribute('data-response-state','complete');
+    await expect(reply).toContainText(copy.Topics.aiNote);
+    await expect(page.locator('.p-chat-sources button')).toHaveCount(2);
+    await page.locator('[data-nav="idea"]').click();
+    await page.locator('[data-tour="quick-spark"]').click();
+    await expect(page.locator('.p-spark-result .p-response')).toHaveAttribute('data-response-state','thinking');
+    await expect(page.locator('[data-tour="save-idea"]')).toHaveCount(0);
+    await page.locator('[data-nav="projects"]').click();
+    await expect(page.locator('.p-response')).toHaveCount(0);
+    await page.waitForTimeout(3300);
+    await expect(page.locator('.p-projects-page')).toBeVisible();
+    await expect(page.locator('.p-response')).toHaveCount(0);
+    await page.locator('[data-nav="history"]').click();
+    await page.locator('.p-history-list > button').first().click();
+    await expect(reply).toHaveAttribute('data-response-state','complete');
+  });
+}
+
+test('scroll entrances, tab transitions, offscreen playback and reduced-motion fallback', async ({page}) => {
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.setViewportSize({width:1440,height:900}); await page.goto('/');
+  const heading = page.locator('.workflow-heading');
+  await expect(heading).toHaveAttribute('data-reveal-state','pending');
+  await heading.scrollIntoViewIfNeeded();
+  await expect(heading).toHaveAttribute('data-reveal-state','entered');
+  expect(await heading.evaluate(el=>getComputedStyle(el).animationName)).toBe('section-arrive');
+  await page.locator('[data-nav="chat"]').click();
+  expect(await page.locator('.p-screen-content').evaluate(el=>getComputedStyle(el).animationName)).toBe('product-page-arrive');
+  await page.locator('[data-tour="chat-example"]').click();
+  await page.locator('[data-tour="chat-send"]').click();
+  const response = page.locator('.p-assistant-message .p-response');
+  await expect(response).toHaveAttribute('data-response-state','streaming');
+  await page.locator('.site-footer').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(200);
+  const paused = await response.innerText();
+  await page.waitForTimeout(600);
+  expect(await response.innerText()).toBe(paused);
+  await response.scrollIntoViewIfNeeded();
+  await expect(response).toHaveAttribute('data-response-state','complete');
+  await page.emulateMedia({reducedMotion:'reduce'});
+  expect(await page.locator('.p-screen-content').evaluate(el=>getComputedStyle(el).animationName)).toBe('none');
+  await expect(page.locator('[data-reveal-state="pending"]')).toHaveCount(0);
+  await page.locator('[data-nav="idea"]').click();
+  await page.locator('[data-tour="quick-spark"]').click();
+  await expect(page.locator('.p-spark-result .p-response')).toHaveAttribute('data-response-state','complete',{timeout:1000});
+});
+
+test('recent feed fills the window and every card opens its own source', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  for (const interest of ['ai', 'climate', 'mind'] as const) {
+    await page.getByRole('button', { name: en.Demo[interest], exact: true }).click();
+    await expect(page.locator('.p-feed-card')).toHaveCount(6);
+    await expect(page.locator('.p-window')).toHaveText('Publication window: 2024–2025.');
+    const fillsWindow = await page.locator('.p-screen').evaluate(el => {
+      const grid = el.querySelector('.p-feed-grid')!.getBoundingClientRect();
+      return grid.bottom > el.getBoundingClientRect().bottom && el.scrollHeight > el.clientHeight;
+    });
+    expect(fillsWindow).toBe(true);
+    for (const id of feedPapers[interest]) {
+      const title = en.Papers[`${id}Title`];
+      await page.locator('.p-feed-grid').getByRole('button', { name: title, exact: true }).click();
+      await expect(page.locator('.p-paper-title')).toHaveText(title);
+      await expect(page.locator('.p-paper-meta a')).toHaveAttribute('href', papers[id].url);
+      await expect(page.locator('.p-abstract p')).toHaveText(en.Papers[`${id}Summary`]);
+      await page.getByRole('button', { name: en.Product.digest, exact: true }).click();
+      await expect(page.locator('.p-digest [data-response-state]')).toHaveAttribute('data-response-state', 'complete');
+      await expect(page.locator('.p-digest')).toContainText(en.Papers[`${id}Summary`]);
+      await page.getByRole('button', { name: en.Demo.back, exact: true }).click();
+    }
+    const originalFirst = await page.locator('.featured-paper h4').innerText();
+    await page.getByRole('button', { name: en.Product.refresh, exact: true }).click();
+    await expect(page.locator('.p-feed-card')).toHaveCount(6);
+    await expect(page.locator('.featured-paper h4')).not.toHaveText(originalFirst);
+  }
+  await page.locator('.featured-paper h4 button').click();
+  await page.locator('.p-action-row').getByRole('button', { name: en.Product.save, exact: true }).click();
+  await page.getByLabel('Language: EN', { exact: true }).click();
+  await expect(page).toHaveURL(/\/zh$/);
+  await expect(page.locator('.p-paper-title')).toHaveText(zh.Papers.generativepeopleTitle);
+  await expect(page.locator('.p-action-row').getByRole('button', { name: zh.Product.saved, exact: true })).toHaveAttribute('aria-pressed', 'true');
 });

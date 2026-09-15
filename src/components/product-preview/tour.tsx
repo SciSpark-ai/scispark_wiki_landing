@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type RefObject } from 'react';
+import { useEffect, useRef, useState, type RefObject, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { MousePointer2, Pause, Play, RotateCcw } from 'lucide-react';
 import type { Stage } from '@/lib/papers';
@@ -53,7 +53,7 @@ export function useGuidedTour(root: RefObject<HTMLDivElement|null>, prepare: (st
       const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
       await wait(450);if(cancelled)return;
       const current=steps[step];prepareRef.current(current.stage,step);
-      await wait(240);if(cancelled)return;
+      await wait(300);if(cancelled)return;
       const element=root.current;if(!element)return;
       let target=element.querySelector<HTMLElement>(current.target);
       // Mobile uses the same chapter/action, with its drawer explicitly opened.
@@ -74,6 +74,13 @@ export function useGuidedTour(root: RefObject<HTMLDivElement|null>, prepare: (st
       await wait(reduced?500:950);if(cancelled)return;
       if(current.click && !(target instanceof HTMLButtonElement && target.disabled)) {if(!reduced)setCursor({x,y,click:true,...placement});target.click();}
       await wait(2300);if(cancelled)return;
+      // AI playback owns its timing; let the answer finish before the next tab.
+      let awaitedResponse = false;
+      while (element.querySelector('[data-response-state="thinking"], [data-response-state="streaming"]')) {
+        awaitedResponse = true;
+        await wait(100); if (cancelled) return;
+      }
+      if (awaitedResponse) { await wait(1200); if (cancelled) return; }
       setCursor(previous=>previous?{...previous,click:false}:null);
       if(step===steps.length-1){change('finished');setCursor(null);}else setStep(step+1);
     }
@@ -90,13 +97,13 @@ export function TourCursor({cursor,step}: {cursor:ReturnType<typeof useGuidedTou
   if(!cursor)return null;
   return <div className={`tour-cursor ${cursor.click?'is-clicking':''} ${cursor.left?'caption-left':''} ${cursor.above?'caption-above':''}`} aria-hidden="true" style={{transform:`translate3d(${cursor.x}px,${cursor.y}px,0)`}}><MousePointer2 size={27} fill="var(--bg-page)" strokeWidth={1.6}/><i/><span className="tour-cursor-caption">{t(`cursor${step}`)}</span></div>;
 }
-export function TourControls({tour}: {tour:ReturnType<typeof useGuidedTour>}) {
+export function TourControls({tour,children}: {tour:ReturnType<typeof useGuidedTour>;children:ReactNode}) {
   const t=useTranslations('Experience');
   const caption=tour.mode==='manual'?t('manual'):tour.mode==='finished'?t('tourDone'):t(steps[tour.step].caption);
   const activeChapter=chapters.findLastIndex(index=>index<=tour.step);
   return <div className="tour-controls" aria-label={t('tour')} data-tour-mode={tour.mode}>
     <div className="tour-caption"><span>{t('tour')}</span><p>{caption}</p></div>
     <div className="tour-actions"><div className="tour-chapters" role="group" aria-label={t('tour')}>{chapters.map((index,i)=><button key={index} aria-label={`${i+1}. ${t(steps[index].caption)}`} aria-pressed={i===activeChapter} onClick={()=>tour.jump(index)}><span>{i+1}</span></button>)}</div>
-    <button className="tour-play" onClick={tour.mode==='playing'?tour.pause:()=>tour.play(tour.mode==='finished'?0:chapters[activeChapter])}>{tour.mode==='playing'?<Pause size={14}/>:<Play size={14}/>}<span>{t(tour.mode==='playing'?'pause':tour.mode==='idle'||tour.mode==='finished'?'play':'resume')}</span></button><button className="tour-replay" aria-label={t('replay')} title={t('replay')} onClick={tour.replay}><RotateCcw size={15}/></button></div>
+    <button className="tour-play" onClick={tour.mode==='playing'?tour.pause:()=>tour.play(tour.mode==='finished'?0:chapters[activeChapter])}>{tour.mode==='playing'?<Pause size={14}/>:<Play size={14}/>}<span>{t(tour.mode==='playing'?'pause':tour.mode==='idle'||tour.mode==='finished'?'play':'resume')}</span></button><button className="tour-replay" aria-label={t('replay')} title={t('replay')} onClick={tour.replay}><RotateCcw size={15}/></button>{children}</div>
   </div>;
 }

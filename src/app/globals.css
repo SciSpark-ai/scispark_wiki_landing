@@ -15,7 +15,7 @@
   --text-secondary: #3e2407;
   --text-muted: #716559;
   --accent: #f97316;
-  --cta-accent: #c4510c;
+  --cta-accent: var(--accent);
   --on-accent: #fff;
   --accent-ink: #a64717;
   --accent-ink-hover: #87380e;

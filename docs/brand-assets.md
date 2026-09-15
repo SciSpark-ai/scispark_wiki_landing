@@ -5,7 +5,8 @@ These files are selected production assets copied from the user-supplied
 
 - `public/brand/wordmark.png`: transparent wordmark, an existing raster extraction.
 - `public/brand/sparky-idle-light.svg` and `sparky-idle-dark.svg`: supplied companion exports.
-- `public/brand/spark.svg`: supplied orange vector symbol.
+- `public/brand/spark.svg`: supplied orange vector symbol. Signup buttons reuse
+  its silhouette as a CSS mask, inheriting white from the button text.
 - `public/favicon.svg`, `public/apple-touch-icon.png`, and the app's `favicon.ico`: supplied
   favicon exports.
 

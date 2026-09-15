@@ -25,7 +25,7 @@ try {
     }
     const image = new ImageResponse(h("div", { style: { width: "100%", height: "100%", display: "flex", flexDirection: "column", background: "#fefaf5", color: "#2b180a", padding: "38px 74px", fontFamily: locale === "en" ? "Halant" : "Noto" } },
       h("img", { src: `data:image/png;base64,${wordmark.toString("base64")}`, width: 200, height: 100, style: { marginLeft: -5 } }),
-      h("div", { style: { display: "flex", fontSize: locale === "en" ? 74 : 60, lineHeight: 1.2, maxWidth: 1000, marginTop: 28 } }, copy.headline),
+      h("div", { style: { display: "flex", fontSize: locale === "en" ? 66 : 60, lineHeight: 1.2, maxWidth: 1000, marginTop: 28 } }, copy.headline),
       h("div", { style: { display: "flex", fontSize: 25, lineHeight: 1.6, color: "#716559", marginTop: 24, maxWidth: 920, fontFamily: locale === "en" ? "Geist" : "Noto" } }, copy.intro),
       h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto", paddingTop: 24, borderTop: "1px solid #e8d3c0", fontFamily: locale === "en" ? "Geist" : "Noto", fontSize: 21 } },
         h("span", { style: { color: "#716559" } }, "landing.scispark.ai"),

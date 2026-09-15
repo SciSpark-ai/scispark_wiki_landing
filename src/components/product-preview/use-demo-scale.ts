@@ -8,10 +8,12 @@ export function useDemoScale(stage: RefObject<HTMLDivElement | null>) {
   useEffect(() => {
     const element = stage.current;
     if (!element) return;
+    const controls = element.parentElement?.querySelector<HTMLElement>(".tour-controls");
     const desktop = matchMedia("(min-width: 1024px)");
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0;
     let lastWidth = 0;
+    let lastControlsHeight = 0;
     function update() {
       frame = 0;
       if (!element) return;
@@ -24,10 +26,16 @@ export function useDemoScale(stage: RefObject<HTMLDivElement | null>) {
       const width = element.clientWidth;
       const height = width * 10 / 16;
       const viewport = window.innerHeight;
-      const fitted = Math.min(1, 1120 / width, Math.max(300, viewport - 236) / height);
+      // Reserve the measured control bar as well as the header clearance. The
+      // whole presentation fits together, including translated/wrapped controls.
+      const topInset = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 96;
+      const controlsHeight = controls?.offsetHeight ?? 64;
+      const controlsGap = parseFloat(getComputedStyle(controls ?? element).marginTop) || 8;
+      const availableHeight = Math.max(180, viewport - topInset - controlsHeight - controlsGap - 16);
+      const fitted = Math.min(1, 1280 / width, availableHeight / height);
       const top = element.getBoundingClientRect().top;
       const start = viewport * .78;
-      const progress = Math.max(0, Math.min(1, (start - top) / Math.max(1, start - 155)));
+      const progress = Math.max(0, Math.min(1, (start - top) / Math.max(1, start - topInset)));
       const eased = progress * progress * (3 - 2 * progress);
       const scale = reduced.matches ? fitted : 1 + (fitted - 1) * eased;
       element.style.setProperty("--demo-base-height", `${height}px`);
@@ -35,10 +43,17 @@ export function useDemoScale(stage: RefObject<HTMLDivElement | null>) {
       element.parentElement?.style.setProperty("--demo-display-width", `${width * scale}px`);
     }
     function schedule() { if (!frame) frame = requestAnimationFrame(update); }
-    const observer = new ResizeObserver(([entry]) => {
-      if (entry.contentRect.width !== lastWidth) { lastWidth = entry.contentRect.width; schedule(); }
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        if (entry.target === element && entry.contentRect.width !== lastWidth) {
+          lastWidth = entry.contentRect.width; schedule();
+        } else if (entry.target === controls && controls.offsetHeight !== lastControlsHeight) {
+          lastControlsHeight = controls.offsetHeight; schedule();
+        }
+      }
     });
     observer.observe(element);
+    if (controls) observer.observe(controls);
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
     desktop.addEventListener("change", schedule);

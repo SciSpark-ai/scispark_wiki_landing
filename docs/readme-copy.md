@@ -2,7 +2,8 @@
 
 The September 13 refinement replaces invented marketing slogans with existing
 language from `/Users/tongshan/Documents/SciSpark_paper_manager/README.md`.
-Chinese and Japanese are translations of those English lines.
+Chinese and Japanese are translations of those English lines. The English hero
+was subsequently revised by the user to “From the study you discover to the question you investigate next.”; this wording overrides the README headline.
 
 | Landing position | README wording and location |
 | --- | --- |
