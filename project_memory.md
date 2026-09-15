@@ -36,6 +36,52 @@ Updated 2026-09-15 from local source, user decisions, and production-build check
 
 # Current Release/Session State
 
+- September 15: the user approved committing and pushing the deployed share
+  cards, academic-research copy, tagline formatting, font subsets, and associated
+  validation/deployment records to `origin/main`. Use Git history and remote refs
+  for source-publication status. This does not change the Vercel Git integration.
+
+- September 15 tagline formatting is live at `landing.scispark.ai` on deployment
+  `dpl_8nKeTF9Ev92YLWpdWHLDEpMdBtQJ`. The hero intro has an explicit line break
+  before its second sentence in all three locales. The explanatory caption above
+  the demo is removed, including unused translations/styles. Share descriptions
+  remain plain text. Lint/build and three targeted browser checks pass; desktop
+  and phone were visually inspected, and public locale HTML was verified after
+  promotion. Source was uncommitted at deployment time, based on `f4a3d93`.
+
+- September 15 academic-positioning follow-up was published at `landing.scispark.ai`
+  on deployment `dpl_8zf6A6TCkyJkBaQhQBRhbL8pRQXB`. Hero introduction, feed
+  description, FAQ, search metadata, and share descriptions explicitly identify
+  academic research and scholarly papers in English, Chinese, and Japanese.
+  Preserve the approved headline. Scholarly-source names were verified against
+  the product README; do not imply all papers are peer reviewed. CJK font
+  subsets were regenerated. Lint/build and seven responsive/metadata tests pass;
+  all-locale phone copy and English desktop were visually inspected. Staged and
+  public locale text/metadata checks pass. Deployed from the working tree based
+  on `f4a3d93`, before the subsequent source-publication step.
+
+- September 15 share-preview follow-up: deployment
+  `dpl_8FEWdKwotLfGEWGBzHbeBogM4fgD` replaces the launch deployment below.
+  It was deployed from the working tree based on `f4a3d93`, before source
+  publication. Open Graph uses the versioned 600×600
+  Sparky icon; X uses localized 1200×630 wordmark/slogan cards. Lint, build,
+  all-locale metadata regression, staged checks, and public metadata/assets
+  checks pass. Physical WeChat/iOS sharing and cache refresh remain unverified.
+
+- September 15 initial production release: commit `f4a3d93` was published at
+  `https://landing.scispark.ai/` on Vercel project `scispark-landing`, team
+  `scisparks-projects`. Deployment `dpl_GD5eacFyCmKBejKJQaX9yTEpVx4V` was built
+  with production settings, checked while staged, then promoted. Public `/`,
+  `/zh`, and `/ja` return 200 with the new headlines and beta/GitHub links.
+  The user made `SciSpark-ai/scispark_wiki_landing` public to resolve the Hobby
+  plan's private-repository author restriction. The previous deployment
+  `dpl_DH2ujogPeTAj32G3JWaqdVxY7LVJ` remains available for rollback.
+  The Vercel Git connection still points to `SciSpark-ai/scispark-landing`;
+  changing it to the new repository awaits explicit user approval after an
+  automatic approval-review rejection. Do not assume new-repository pushes
+  deploy automatically. Local `.vercel/project.json` links this workspace to
+  the existing project and is ignored.
+
 - September 15 scroll refinement: clearer 900ms fade/rise entrances, staggered
   features/setup/FAQ, and a footer entrance. Sections re-arm only when fully
   below the viewport, supporting repeat downward visits. Preserve static
@@ -122,8 +168,8 @@ Updated 2026-09-15 from local source, user decisions, and production-build check
   (only the documented product contrast exception), best practices/SEO 100,
   FCP 1.1s, LCP 2.5s, TBT 20ms, CLS 0. This is one local simulated audit.
   September 12 measurements remain historical; profile hosted locales before release.
-- The public landing has not been replaced. Domain reassignment, hosted preview,
-  and physical phone testing remain separate release work. No app accounts,
+- The public landing was replaced on September 15; see the production release
+  record above. Physical phone testing remains separate. No app accounts,
   cloud storage, or native mobile runtime are implemented in this marketing repo.
 
 ## Confirmed product and design decisions
@@ -161,8 +207,10 @@ Updated 2026-09-15 from local source, user decisions, and production-build check
 - Marketing CTAs and product actions share the app's `#F97316` orange and white
   labels, as explicitly requested. `--cta-accent` aliases `--accent` to prevent
   drift; the shared pair has the documented 2.80:1 text contrast exception.
-- README slogan provenance is in `docs/readme-copy.md`; metadata and social cards
-  follow the updated hero. CJK subsets include the headlines and cursor callouts.
+- README slogan provenance is in `docs/readme-copy.md`. Share metadata uses a
+  short SciSpark title and localized intro; compact previews use the Sparky icon,
+  while wide X cards use the wordmark and closing slogan. Preserve the full
+  user-approved hero on the page. CJK subsets include the headlines and cursor callouts.
 - Discord, LinkedIn, and X URLs remain the only missing content inputs. Their
   links are omitted until populated in `src/lib/site.ts`; no placeholders ship.
 - Visitor-facing GitHub points to the product repository, not the landing repo.

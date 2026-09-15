@@ -216,9 +216,22 @@ test("static conversion paths, source links, metadata, and locale key parity", a
     expect(await signupLinks.count()).toBeGreaterThanOrEqual(3);
     for (const text of await signupLinks.allTextContents()) expect(text.trim()).toBe(copies[locale].Site.try);
     await expect(page.locator('a[href="#"]')).toHaveCount(0);
-    const res = await request.get(`/og/${locale}.png`);
-    expect(res.ok()).toBeTruthy();
-    expect(res.headers()["content-type"]).toContain("image/png");
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "SciSpark");
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute("content", copies[locale].Site.intro);
+    await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://landing.scispark.ai/og/share-icon-v2.png");
+    for (const dimension of ["width", "height"]) {
+      await expect(page.locator(`meta[property="og:image:${dimension}"]`)).toHaveAttribute("content", "600");
+    }
+    await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute("content", `https://landing.scispark.ai/og/${locale}-v2.png`);
+    for (const [path, width, height] of [["/og/share-icon-v2.png", 600, 600], [`/og/${locale}-v2.png`, 1200, 630]] as const) {
+      const res = await request.get(path);
+      expect(res.ok()).toBeTruthy();
+      expect(res.headers()["content-type"]).toContain("image/png");
+      const png = await res.body();
+      expect(png.readUInt32BE(16)).toBe(width);
+      expect(png.readUInt32BE(20)).toBe(height);
+    }
   }
   expect((await request.get("/sitemap.xml")).status()).toBe(200);
   expect((await request.get("/robots.txt")).status()).toBe(200);

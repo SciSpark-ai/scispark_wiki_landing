@@ -1,7 +1,81 @@
-# Local implementation validation
+# Implementation and deployment validation
+
+## Tagline-formatting release — September 15, 2026
+
+- Current live deployment: `dpl_8nKeTF9Ev92YLWpdWHLDEpMdBtQJ`, built from the
+  uncommitted working tree based on `f4a3d93`. Vercel production build passed.
+- The staged hero line break and caption removal were checked before promotion.
+  Public `/`, `/zh`, and `/ja` then returned HTTP 200 with the explicit sentence
+  break and no explanatory demo caption. The preceding deployment is retained.
+
+## Academic-positioning release — September 15, 2026
+
+- Deployment: `dpl_8zf6A6TCkyJkBaQhQBRhbL8pRQXB`, built from the
+  working tree based on `f4a3d93`. Source was uncommitted at deployment time.
+- Vercel production build passed. Staged `/`, `/zh`, and `/ja` contained the
+  expected hero, feed, FAQ, and share descriptions before promotion.
+- After promotion, all three public routes returned HTTP 200, matching the
+  revised localized copy and metadata. The square Sparky share-image URL remains
+  intact. The earlier share-preview deployment is retained.
+
+## Share-preview release — September 15, 2026
+
+- Deployment: `dpl_8FEWdKwotLfGEWGBzHbeBogM4fgD`, built from the working
+  tree based on `f4a3d93`. Source was uncommitted at deployment time.
+- Production build passed on Vercel. Staged metadata and exact share-icon bytes
+  were checked before promotion to `https://landing.scispark.ai/`.
+- After promotion, all three public locales served the new metadata and all four
+  new image URLs returned HTTP 200 with bytes matching the inspected local assets.
+- Native WeChat/iOS preview selection and cache behavior remain unverified.
+
+## Production release — September 15, 2026
+
+- Source commit: `f4a3d93f2a9d7d68e9f368a7ed88a19d75c47899`.
+- Vercel project: `scisparks-projects/scispark-landing`.
+- Deployment: `dpl_GD5eacFyCmKBejKJQaX9yTEpVx4V`, production, READY and promoted.
+- Public URL: `https://landing.scispark.ai/`. The previous landing is replaced.
+- Vercel's Next.js production build passed, including TypeScript and all locale
+  pages; build output completed in 31 seconds. It was staged before promotion.
+- Staged checks passed for all three locales, beta/product GitHub destinations,
+  robots, sitemap, three social images, and favicon. Browser inspection confirmed
+  the rendered hero, demo tab navigation, and a Sparky response from thinking to
+  completion. These were hosted smoke checks, not a repeat of the full local suite.
+- Public `/`, `/zh`, and `/ja` returned HTTP 200 with the expected localized
+  headlines and signup/GitHub links after promotion. The production page was
+  opened and inspected in Chrome.
+- A deployment-specific Vercel error-log query over the preceding 15 minutes
+  returned no entries; this is a point-in-time check, not ongoing monitoring.
+- The old production deployment `dpl_DH2ujogPeTAj32G3JWaqdVxY7LVJ` is retained.
+  Git integration still targets the old repository pending explicit approval to
+  reconnect it. The new repository is public, as changed by the user.
+
+## Local checks
+
+September 15 tagline-formatting follow-up: the hero introduction has an explicit
+line break before its second sentence in each locale; the explanatory demo
+caption is removed. Lint/build and three targeted browser scenarios pass (8.5s),
+covering locale metadata/key parity, no-JavaScript entry paths, and proportional
+demo fit with the adjacent controls. Desktop and phone rendering were inspected.
+CJK subsets were refreshed after removing the localized caption.
+
+September 15 academic-positioning follow-up: lint and production build pass.
+Seven targeted browser scenarios pass (17.0s): all-locale metadata/key parity
+and responsive/accessibility checks across all three languages and both themes.
+Chinese and Japanese font subsets were regenerated for the revised copy.
+The scholarly-source names were verified against the product README Feed section.
+The English hero was visually inspected at desktop and 390px phone widths;
+Chinese and Japanese hero copy was visually inspected at 390px as well.
+
+September 15 share-preview follow-up: lint and production build pass. The targeted
+metadata/browser regression passes (4.1s), covering all three locales, concise
+Open Graph titles/descriptions, absolute image URLs, actual 600×600 compact and
+1200×630 wide PNG dimensions, conversion links, and translation-key parity.
+All four new images were visually inspected. The WeChat/iOS share sheet and its
+cache behavior have not been tested on a physical device.
 
 Verified 2026-09-15 against `npm run build` followed by `npm run start`, using
-installed Google Chrome. This records local results, not a public deployment.
+installed Google Chrome. This section records local results separately from the
+production release above.
 
 September 15 publication check: all 32 browser scenarios pass together in 1.6
 minutes, including the local-only workflow interactions and complete guided tour
@@ -60,7 +134,7 @@ and a workflow click was visually verified.
 | New motion behavior | Sections enter on scroll; tabs animate on navigation; EN/ZH/JA responses progress through thinking, partial text, and completion; sources/save actions wait; navigation cancels playback; History opens immediately; offscreen playback pauses; reduced motion skips streaming |
 | Installation copy | Actual clipboard success plus denied-clipboard feedback and selectable fallback |
 | No JavaScript | Visible signup on a 1366×660 viewport; install anchor/commands and native FAQ work in all locales |
-| Metadata and links | Canonical host, locale alternates, localized OG images, consistent signup CTA, robots/sitemap, unknown route 404; no empty `#` links |
+| Metadata and links | Canonical host, locale alternates, square Sparky OG image, localized wide X cards, consistent signup CTA, robots/sitemap, unknown route 404; no empty `#` links |
 | Runtime | No page errors during all nine discovery journeys |
 | Visual inspection | Compared actual product public Feed/Wiki/Graph/Spark captures with the rebuilt preview; inspected desktop in both themes and localized phone captures. Supplied artwork and social cards were also inspected during the initial build. |
 

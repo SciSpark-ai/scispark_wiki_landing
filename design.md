@@ -416,8 +416,19 @@ benefits, `#faq` to FAQ, and `#final-cta` to the closing signup action. New
 `#install` targets the local setup block. Give anchor targets scroll clearance
 below the sticky header. Nav labels are adapted to the user-approved structure.
 
-Replace the old clinical title, description, and social cards. Use real brand and
-product visuals for OG images with appropriate localized copy. Publish a sitemap
+State the academic focus explicitly in the hero introduction, feed description,
+FAQ, and metadata. Describe discovery as scholarly or academic papers, including
+preprints, without implying every source is peer reviewed. Keep the approved
+hero headline and README feature slogans. Apply the scope to all three locales.
+Give the hero introduction an explicit line break between its two sentences.
+Omit the explanatory caption above the demo's research-interest selector.
+
+Replace the old clinical title, description, and social cards. Compact Open Graph
+previews use a centered white Sparky on the app's orange, without tiny headline
+text. Wide X cards use the original wordmark and localized closing slogan within
+a square-safe center area. Share titles stay short (SciSpark), and descriptions
+use the localized one-sentence introduction. Use versioned image URLs when
+revising share artwork; messaging clients may cache earlier previews. Publish a sitemap
 for the three locale URLs and production robots rules. The study's `noindex`
 setting must not leak into the landing, and planning artifacts must not become
 production routes. Inspect existing analytics, legal/consent content, redirects,

@@ -19,7 +19,7 @@ export function Landing({ locale }: { locale: Locale }) {
       <section className="hero" aria-labelledby="hero-title">
         <HeroField /><div className="hero-content shell">
         <h1 id="hero-title">{t("headline")}</h1>
-        <p className="hero-intro">{t("intro")}</p>
+        <p className="hero-intro">{t("introLead")}<br />{t("introDetail")}</p>
         <div className="hero-actions"><a className="button button-primary" href={site.signup}><SparkIcon /><span className="button-label">{t("try")}</span></a><a className="button button-secondary" href="#install"><TerminalWindowIcon aria-hidden="true" /><span className="button-label">{t("install")}</span></a></div>
         </div>
       </section>

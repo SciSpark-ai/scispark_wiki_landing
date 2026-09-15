@@ -114,6 +114,10 @@ node scripts/generate-social-cards.mjs
 Font regeneration downloads public, text-subset fonts from Google Fonts and the
 corresponding upstream licenses. Runtime and normal builds make no font requests
 to Google. Social cards are generated locally from the same artwork and fonts.
+Open Graph uses `public/og/share-icon-v2.png` (600×600) for compact messaging
+previews. X uses locale-specific `*-v2.png` cards (1200×630), with the wordmark
+and short slogan kept inside the central square. Earlier image URLs remain
+available for cached shares. Native share-sheet behavior still needs device testing.
 
 ## Deployment
 
@@ -122,14 +126,28 @@ Use `npm ci`, `npm run build`, and the host's Next.js runtime. On a generic Node
 host, run `npx next start -H 0.0.0.0 -p "$PORT"`; the local start script deliberately
 binds to loopback for previewing.
 
-The intended domain is **landing.scispark.ai**. Inspect the existing landing's
-hosting configuration and attach a preview before changing the domain assignment.
+The production site is **https://landing.scispark.ai/**, launched on September 15,
+2026 from commit `f4a3d93` to Vercel project `scispark-landing` in
+`scisparks-projects`. The sharing-preview and academic-research copy follow-ups
+were deployed from the working tree; exact release provenance is recorded in
+`docs/validation.md`.
+Build and verify a staged production deployment before
+promoting it to the domain:
+
+```sh
+vercel deploy --prod --skip-domain --scope scisparks-projects
+vercel promote <verified-deployment-url> --scope scisparks-projects
+```
+
+The Vercel Git integration currently points to the earlier `scispark-landing`
+repository. Switching it to this repository awaits approval; pushes here do not
+yet deploy automatically. The previous deployment is retained for rollback.
 The product at **beta.scispark.ai** and the main **scispark.ai** host are separate.
 The old waitlist, authentication implementation, and placeholder legal links were
 not imported. No analytics or new data collection is added.
 
 The planning HTML and Markdown live outside `public/`, so they are not site routes.
-This task builds and validates locally; it does not publish the replacement site.
+Hosted verification and the production deployment are recorded in the validation log.
 
 See [validation results](docs/validation.md) for the tested build and release scope.
 

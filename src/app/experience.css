@@ -62,7 +62,6 @@ html[lang="zh-Hans"] .hero h1, html[lang="ja"] .hero h1 { font-size: clamp(44px,
 .mac-preview-label { position:absolute; right:16px; font-size:10px; }
 .product-window { border:0; border-radius:0 0 17px 17px; box-shadow:none; }
 .demo-presentation { --demo-controls-gap:8px; scroll-margin-top:0; }
-.p-preview-description { text-align:center; color:var(--text-muted); font-size:12px; margin:0 auto 16px; max-width:800px; }
 .demo-stage { position:relative; }
 @media (min-width:1024px) {
   .demo-stage { --demo-base-height:780px; --demo-scale:1; height:calc(var(--demo-base-height) * var(--demo-scale)); overflow-anchor:none; }

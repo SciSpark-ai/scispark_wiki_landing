@@ -5,6 +5,17 @@ language from `/Users/tongshan/Documents/SciSpark_paper_manager/README.md`.
 Chinese and Japanese are translations of those English lines. The English hero
 was subsequently revised by the user to “From the study you discover to the question you investigate next.”; this wording overrides the README headline.
 
+On September 15, the user asked for explicit academic-research positioning.
+The hero description now reads: “A personal workspace for academic research.
+Discover scholarly papers, build knowledge, and explore ideas.” Feed descriptions,
+FAQ, page metadata, and share descriptions use the same scope in all three
+languages. The scholarly-source examples (arXiv, OpenAlex, Semantic Scholar,
+PubMed) were verified against the product README's Feed section. This includes
+preprints and does not imply that every paper is peer reviewed.
+The user requested an explicit line break before the second hero-description
+sentence and removal of the explanatory caption above the demo. This applies
+to all three languages; share descriptions remain plain text.
+
 | Landing position | README wording and location |
 | --- | --- |
 | Hero | “From the paper you discover to the question you ask next.” — opening headline |

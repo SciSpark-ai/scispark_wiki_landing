@@ -32,7 +32,6 @@ const groups = [
 
 export function Demo() {
   const d = useTranslations("Demo");
-  const e = useTranslations("Experience");
   const t = useTranslations("Product");
   const { state, dispatch, reset } = useDemo();
   const root = useRef<HTMLDivElement>(null);
@@ -68,7 +67,6 @@ export function Demo() {
   const currentLabel = selectedTab === "feed" ? t("home") : selectedTab === "chat" ? t("sparky") : t(selectedTab);
   return <section className="demo-section product-demo" aria-label={d("preview")}>
     <h2 className="sr-only">{d("preview")}</h2>
-    <p className="p-preview-description">{e("caption")}</p>
     <div className="interest-bar"><span className="interest-label" id="interest-label">{d("interestLabel")}</span><div className="interest-options" role="group" aria-labelledby="interest-label">{interests.map(interest => { const Icon = interestIcons[interest]; return <button key={interest} className="interest-button" aria-pressed={interest === state.interest} onClick={() => { tour.takeControl(); dispatch({ type: "interest", interest }); setRevision(revision + 1); setStatus(""); }}><Icon />{d(interest)}</button>; })}</div></div>
     <div className="demo-presentation" id="product-showcase">
     <div className="demo-stage" ref={stage}><div className="mac-window" ref={root} onPointerEnter={tour.enter} onPointerLeave={tour.leave}

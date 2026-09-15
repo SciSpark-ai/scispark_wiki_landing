@@ -15,8 +15,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale?: 
   return {
     metadataBase: new URL(site.url), title: copy.title, description: copy.description,
     alternates: { canonical: url, languages: { en: site.url + "/", "zh-Hans": site.url + "/zh", ja: site.url + "/ja", "x-default": site.url + "/" } },
-    openGraph: { title: copy.title, description: copy.description, url, siteName: "SciSpark", locale: { en: "en_US", zh: "zh_CN", ja: "ja_JP" }[locale], type: "website", images: [{ url: `/og/${locale}.png`, width: 1200, height: 630, alt: copy.headline }] },
-    twitter: { card: "summary_large_image", title: copy.title, description: copy.description, images: [`/og/${locale}.png`] },
+    openGraph: { title: "SciSpark", description: copy.intro, url, siteName: "SciSpark", locale: { en: "en_US", zh: "zh_CN", ja: "ja_JP" }[locale], type: "website", images: [{ url: "/og/share-icon-v2.png", width: 600, height: 600, type: "image/png", alt: "SciSpark" }] },
+    twitter: { card: "summary_large_image", title: "SciSpark", description: copy.intro, images: [{ url: `/og/${locale}-v2.png`, width: 1200, height: 630, alt: `SciSpark — ${copy.closingTitle}` }] },
     icons: { icon: "/favicon.svg", apple: "/apple-touch-icon.png" },
     robots: { index: true, follow: true },
   };
